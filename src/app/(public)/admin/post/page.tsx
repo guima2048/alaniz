@@ -112,13 +112,32 @@ export default function AdminPostPage() {
         </div>
         <ul className="max-h-[70vh] overflow-auto">
           {posts.map((p) => (
-            <li key={p.slug}>
+            <li key={p.slug} className="flex items-center">
               <button
-                className={`w-full text-left px-3 py-2 hover:bg-gray-50 ${selectedSlug === p.slug ? "bg-gray-100 font-medium" : ""}`}
+                className={`flex-1 text-left px-3 py-2 hover:bg-gray-50 ${selectedSlug === p.slug ? "bg-gray-100 font-medium" : ""}`}
                 onClick={() => setSelectedSlug(p.slug)}
               >
                 {p.title}
                 <div className="text-xs text-gray-500">{p.slug}</div>
+              </button>
+              <button
+                className="px-2 py-1 text-xs rounded bg-red-600 text-white hover:bg-red-700 mr-2"
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  if (!confirm(`Excluir o post "${p.title}" (${p.slug})?`)) return;
+                  const res = await fetch(`/api/posts?slug=${encodeURIComponent(p.slug)}`, { method: "DELETE" });
+                  if (res.ok) {
+                    setPosts((prev) => prev.filter((post) => post.slug !== p.slug));
+                    if (selectedSlug === p.slug) {
+                      setSelectedSlug("");
+                    }
+                  } else {
+                    alert("Falha ao excluir post");
+                  }
+                }}
+                title={`Excluir ${p.title}`}
+              >
+                🗑️
               </button>
             </li>
           ))}

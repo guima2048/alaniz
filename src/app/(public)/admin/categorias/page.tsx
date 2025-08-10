@@ -94,13 +94,32 @@ export default function AdminCategoriasPage() {
         </div>
         <ul className="max-h-[70vh] overflow-auto">
           {cats.map((c) => (
-            <li key={c.slug}>
+            <li key={c.slug} className="flex items-center">
               <button
-                className={`w-full text-left px-3 py-2 hover:bg-gray-50 ${selectedSlug === c.slug ? "bg-gray-100 font-medium" : ""}`}
+                className={`flex-1 text-left px-3 py-2 hover:bg-gray-50 ${selectedSlug === c.slug ? "bg-gray-100 font-medium" : ""}`}
                 onClick={() => setSelectedSlug(c.slug)}
               >
                 {c.title}
                 <div className="text-xs text-gray-500">{c.slug}</div>
+              </button>
+              <button
+                className="px-2 py-1 text-xs rounded bg-red-600 text-white hover:bg-red-700 mr-2"
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  if (!confirm(`Excluir a categoria "${c.title}" (${c.slug})?`)) return;
+                  const res = await fetch(`/api/categories?slug=${encodeURIComponent(c.slug)}`, { method: "DELETE" });
+                  if (res.ok) {
+                    setCats((prev) => prev.filter((cat) => cat.slug !== c.slug));
+                    if (selectedSlug === c.slug) {
+                      setSelectedSlug("");
+                    }
+                  } else {
+                    alert("Falha ao excluir categoria");
+                  }
+                }}
+                title={`Excluir ${c.title}`}
+              >
+                🗑️
               </button>
             </li>
           ))}

@@ -164,13 +164,32 @@ export default function SiteEditorPage() {
         </div>
         <ul className="max-h-[70vh] overflow-auto">
           {sites.map((s) => (
-            <li key={s.slug}>
+            <li key={s.slug} className="flex items-center">
               <button
-                className={`w-full text-left px-3 py-2 hover:bg-gray-50 ${selectedSlug === s.slug ? "bg-gray-100 font-medium" : ""}`}
+                className={`flex-1 text-left px-3 py-2 hover:bg-gray-50 ${selectedSlug === s.slug ? "bg-gray-100 font-medium" : ""}`}
                 onClick={() => setSelectedSlug(s.slug)}
               >
                 {s.name}
                 <div className="text-xs text-gray-500">{s.slug}</div>
+              </button>
+              <button
+                className="px-2 py-1 text-xs rounded bg-red-600 text-white hover:bg-red-700 mr-2"
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  if (!confirm(`Excluir o site "${s.name}" (${s.slug})?`)) return;
+                  const res = await fetch(`/api/sites?slug=${encodeURIComponent(s.slug)}`, { method: "DELETE" });
+                  if (res.ok) {
+                    setSites((prev) => prev.filter((site) => site.slug !== s.slug));
+                    if (selectedSlug === s.slug) {
+                      setSelectedSlug("");
+                    }
+                  } else {
+                    alert("Falha ao excluir site");
+                  }
+                }}
+                title={`Excluir ${s.name}`}
+              >
+                🗑️
               </button>
             </li>
           ))}
