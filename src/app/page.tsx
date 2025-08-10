@@ -3,7 +3,6 @@ import { useEffect, useMemo, useState } from "react";
 import { CategoryChips } from "@/components/CategoryChips";
 import { Row } from "@/components/Row";
 import { categories, type SiteItem } from "@/lib/site";
-import { getBaseUrl } from "@/lib/url";
 
 export default function HomePage() {
   const [query, setQuery] = useState("");
@@ -12,7 +11,7 @@ export default function HomePage() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch(`${getBaseUrl()}/api/sites`, { cache: "no-store" });
+        const res = await fetch("/api/sites", { cache: "no-store" });
         if (res.ok) setSites(await res.json());
       } catch (e) {
         console.error(e);

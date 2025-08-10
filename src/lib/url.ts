@@ -1,4 +1,6 @@
 export function getBaseUrl(): string {
+  if (typeof window !== "undefined") return ""; // Browser should use relative path
+  
   const fromEnv = process.env.NEXT_PUBLIC_BASE_URL?.trim();
   if (fromEnv) return fromEnv.replace(/\/$/, "");
 
