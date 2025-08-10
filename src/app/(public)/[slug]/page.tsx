@@ -7,7 +7,7 @@ import { RateForm } from "@/components/RateForm";
 import { Comments } from "@/components/Comments";
 import { VisitSiteButton } from "@/components/VisitSiteButton";
 import { getDataFilePath, readJsonFile } from "@/lib/fsData";
-import { getBaseUrl } from "@/lib/url";
+
 
 type Params = { slug: string };
 
@@ -111,15 +111,5 @@ export default async function EditorialPage({ params }: { params: Promise<Params
   );
 }
 
-async function RatingBlock({ slug }: { slug: string }) {
-  const res = await fetch(`${getBaseUrl()}/api/ratings?slug=${encodeURIComponent(slug)}`, { cache: "no-store" });
-  const data = res.ok ? await res.json() : { score: 0, count: 0 };
-  return (
-    <div className="flex items-center gap-2 text-sm text-neutral-700">
-      <span className="font-medium">Nota dos usuários:</span>
-      <span>{data.score?.toFixed?.(2) ?? Number(data.score).toFixed(2)} / 10</span>
-      <span>({data.count ?? 0} votos)</span>
-    </div>
-  );
-}
+
 

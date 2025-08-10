@@ -39,7 +39,7 @@ export default function AdminCategoriasPage() {
 
   useEffect(() => {
     if (!selectedSlug && cats.length) setSelectedSlug(cats[0].slug);
-  }, [cats, selectedSlug]);
+  }, [cats]);
 
   const updateSelected = (patch: Partial<Category>) => {
     setCats((prev) => prev.map((it) => (it.slug === selectedSlug ? { ...it, ...patch } : it)));
