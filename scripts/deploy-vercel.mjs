@@ -60,11 +60,21 @@ console.log(`
 2. Faça login com GitHub/GitLab
 3. Clique em "New Project"
 4. Importe este repositório
-5. Configure as variáveis de ambiente:
+5. ⚠️ IMPORTANTE: Configure as variáveis de ambiente:
+   - Vá em "Settings" > "Environment Variables"
+   - Adicione cada variável individualmente:
 
-   NEXT_PUBLIC_SUPABASE_URL=https://ijzceqcwzrylhgmixaqq.supabase.co
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlqemNlcWN3enJ5bGhnbWl4YXFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ4NTc3NzEsImV4cCI6MjA3MDQzMzc3MX0.RRatZdAClrlAdoZt-s3fxWs8IOIksvOobUmvwlNZHvA
-   NEXT_PUBLIC_BASE_URL=https://seu-dominio.vercel.app
+   Nome: NEXT_PUBLIC_SUPABASE_URL
+   Valor: https://ijzceqcwzrylhgmixaqq.supabase.co
+   Environment: Production, Preview, Development
+
+   Nome: NEXT_PUBLIC_SUPABASE_ANON_KEY
+   Valor: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlqemNlcWN3enJ5bGhnbWl4YXFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ4NTc3NzEsImV4cCI6MjA3MDQzMzc3MX0.RRatZdAClrlAdoZt-s3fxWs8IOIksvOobUmvwlNZHvA
+   Environment: Production, Preview, Development
+
+   Nome: NEXT_PUBLIC_BASE_URL
+   Valor: https://seu-dominio.vercel.app
+   Environment: Production, Preview, Development
 
 6. Clique em "Deploy"
 
@@ -80,12 +90,20 @@ console.log(`
 - ✅ Favicon: Alaniz personalizado
 - ✅ SEO: Otimizado
 - ✅ Performance: Otimizado
+- ✅ Vercel config: Corrigido (removido env do vercel.json)
 `);
 
 console.log('\n🔗 LINKS ÚTEIS:');
 console.log('-'.repeat(30));
 console.log('📊 Supabase Dashboard: https://supabase.com/dashboard/project/ijzceqcwzrylhgmixaqq');
 console.log('🚀 Vercel: https://vercel.com');
-console.log('📦 GitHub: (crie um repositório e conecte)');
+console.log('📦 GitHub: https://github.com/guima2048/alaniz');
+
+console.log('\n⚠️ SOLUÇÃO PARA ERRO 404:');
+console.log('-'.repeat(30));
+console.log('Se aparecer erro 404 após o deploy:');
+console.log('1. Verifique se as variáveis de ambiente estão configuradas');
+console.log('2. Aguarde alguns minutos para o cache ser limpo');
+console.log('3. Faça um novo deploy se necessário');
 
 console.log('\n🎉 BOA SORTE COM O DEPLOY!');
