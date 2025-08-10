@@ -123,3 +123,4 @@ console.log('3. Acesse: https://supabase.com/dashboard/project/ijzceqcwzrylhgmix
 console.log('\n🎯 Dados a migrar:');
 console.log(`   - ${sitesData.length} sites`);
 console.log(`   - ${categoriesData.length} categorias`);
+

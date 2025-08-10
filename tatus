@@ -1,0 +1,5 @@
+[33m58fbe73[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m  Fix: Corrigir warning do useCallback no admin
+[33m877bd31[m  Fix: Corrigir warnings do ESLint e limpar código
+[33mc42cebf[m  Fix: Corrigir problema de URL no cliente e simplificar fetch
+[33m9b1012d[m  Fix: Configuração Vercel e Next.js para resolver erro 404
+[33m99a338d[m  Deploy completo: Supabase + Storage + Favicon Alaniz
