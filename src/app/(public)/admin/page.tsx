@@ -9,6 +9,12 @@ const FIXED_PASSWORD = "casal1010";
 const SESSION_KEY = "admin.session";
 
 type AuthState = { isLoggedIn: boolean };
+type Stats = {
+  sites: number;
+  posts: number;
+  categories: number;
+  comments: number;
+};
 
 function loadAuthState(): AuthState {
   if (typeof window === "undefined") return { isLoggedIn: false };
@@ -17,11 +23,53 @@ function loadAuthState(): AuthState {
 
 export default function AdminLoginPage() {
   const [{ isLoggedIn }, setState] = useState<AuthState>({ isLoggedIn: false });
+  const [stats, setStats] = useState<Stats>({ sites: 0, posts: 0, categories: 0, comments: 0 });
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
     setState(loadAuthState());
   }, []);
+
+  // Buscar estatísticas reais
+  useEffect(() => {
+    if (!isLoggedIn) return;
+
+    async function fetchStats() {
+      try {
+        setLoading(true);
+        
+        // Buscar sites
+        const sitesRes = await fetch('/api/sites', { cache: 'no-store' });
+        const sites = sitesRes.ok ? await sitesRes.json() : [];
+        
+        // Buscar posts
+        const postsRes = await fetch('/api/posts', { cache: 'no-store' });
+        const posts = postsRes.ok ? await postsRes.json() : [];
+        
+        // Buscar categorias
+        const categoriesRes = await fetch('/api/categories', { cache: 'no-store' });
+        const categories = categoriesRes.ok ? await categoriesRes.json() : [];
+        
+        // Buscar comentários (contar todos)
+        const commentsRes = await fetch('/api/comments', { cache: 'no-store' });
+        const comments = commentsRes.ok ? await commentsRes.json() : [];
+        
+        setStats({
+          sites: sites.length,
+          posts: posts.length,
+          categories: categories.length,
+          comments: comments.length
+        });
+      } catch (error) {
+        console.error('Erro ao buscar estatísticas:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchStats();
+  }, [isLoggedIn]);
 
   const handleLogin = useCallback((e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -83,7 +131,9 @@ export default function AdminLoginPage() {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-neutral-600">Sites</p>
-                <p className="text-2xl font-bold text-neutral-900">12</p>
+                <p className="text-2xl font-bold text-neutral-900">
+                  {loading ? "..." : stats.sites}
+                </p>
               </div>
             </div>
           </div>
@@ -95,7 +145,9 @@ export default function AdminLoginPage() {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-neutral-600">Posts</p>
-                <p className="text-2xl font-bold text-neutral-900">5</p>
+                <p className="text-2xl font-bold text-neutral-900">
+                  {loading ? "..." : stats.posts}
+                </p>
               </div>
             </div>
           </div>
@@ -107,7 +159,9 @@ export default function AdminLoginPage() {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-neutral-600">Categorias</p>
-                <p className="text-2xl font-bold text-neutral-900">4</p>
+                <p className="text-2xl font-bold text-neutral-900">
+                  {loading ? "..." : stats.categories}
+                </p>
               </div>
             </div>
           </div>
@@ -119,7 +173,9 @@ export default function AdminLoginPage() {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-neutral-600">Comentários</p>
-                <p className="text-2xl font-bold text-neutral-900">23</p>
+                <p className="text-2xl font-bold text-neutral-900">
+                  {loading ? "..." : stats.comments}
+                </p>
               </div>
             </div>
           </div>
@@ -192,7 +248,7 @@ export default function AdminLoginPage() {
         </div>
       </div>
     );
-  }, [isLoggedIn, handleLogin, handleLogout]);
+  }, [isLoggedIn, handleLogin, handleLogout, stats, loading]);
 
   return content;
 }
