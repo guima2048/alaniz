@@ -3,26 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { CategoryChips } from "@/components/CategoryChips";
 import { Row } from "@/components/Row";
-
-type SiteItem = {
-  slug: string;
-  name: string;
-  url: string;
-  logo?: string;
-  cover?: string;
-  short_desc?: string;
-  categories?: string[];
-  price_min?: number;
-  price_model?: string;
-  style?: string;
-  audience?: string;
-  privacy_level?: string;
-  editorial_score?: number;
-  rating_avg?: number;
-  rating_count?: number;
-  features?: string[];
-  hero?: string;
-};
+import type { SiteItem } from "@/lib/site";
 
 type Category = {
   slug: string;
