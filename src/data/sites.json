@@ -1,0 +1,51 @@
+[
+  {
+    "slug": "bebaby",
+    "name": "Teste",
+    "url": "https://bebaby.app",
+    "categories": [
+      "sugar"
+    ],
+    "price_min": 159.9,
+    "price_model": "mensal",
+    "style": "catálogo de perfis premium",
+    "audience": "adultos",
+    "privacy_level": "alto",
+    "editorial_score": 9.1,
+    "rating_avg": 9,
+    "rating_count": 124,
+    "features": [
+      "IA social",
+      "moderação de fotos",
+      "plano premium"
+    ],
+    "short_desc": "Plataforma premium com visual de luxo e foco em perfis verificados.",
+    "logo": "/logos/captura-de-tela-2025-08-08-123625-1754677478824.png",
+    "cover": "/covers/captura-de-tela-2025-08-08-110514-1754677488698.png",
+    "hero": "/heroes/captura-de-tela-2025-04-30-223019-1754678060406.png"
+  },
+  {
+    "slug": "seeking",
+    "name": "Seeking",
+    "url": "https://www.seeking.com",
+    "categories": [
+      "sugar",
+      "estilo-tinder"
+    ],
+    "price_min": 0,
+    "price_model": "freemium",
+    "style": "match global",
+    "audience": "internacional",
+    "privacy_level": "médio",
+    "editorial_score": 8.9,
+    "rating_avg": 8.8,
+    "rating_count": 213,
+    "features": [
+      "base internacional",
+      "app iOS/Android"
+    ],
+    "short_desc": "Base global e recursos de busca avançada.",
+    "logo": "/logos/seeking.svg",
+    "cover": "/covers/seeking.svg"
+  }
+]

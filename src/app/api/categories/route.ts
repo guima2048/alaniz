@@ -1,0 +1,85 @@
+import { NextRequest, NextResponse } from "next/server";
+import { getDataFilePath, readJsonFile, writeJsonFile } from "@/lib/fsData";
+import { getSupabase } from "@/lib/supabase";
+
+type Category = { slug: string; title: string };
+
+export async function GET() {
+  const supabase = getSupabase();
+  if (supabase) {
+    try {
+      const { data, error } = await supabase
+        .from("categories")
+        .select("*")
+        .order("title");
+      if (error) throw error;
+      return NextResponse.json(data || []);
+    } catch (e) {
+      console.error("Supabase error:", e);
+      // Fallback para arquivo local
+    }
+  }
+  
+  // Fallback: arquivo local
+  const filePath = getDataFilePath("categories.json");
+  const data = await readJsonFile<Category[]>(filePath, []);
+  return NextResponse.json(data);
+}
+
+export async function PUT(req: NextRequest) {
+  const body = (await req.json().catch(() => ({}))) as Partial<Category>;
+  if (!body.slug || !body.title) return NextResponse.json({ ok: false }, { status: 400 });
+  
+  const supabase = getSupabase();
+  if (supabase) {
+    try {
+      const { error } = await supabase
+        .from("categories")
+        .upsert(body, { onConflict: "slug" });
+      if (error) throw error;
+      return NextResponse.json({ ok: true });
+    } catch (e) {
+      console.error("Supabase error:", e);
+      // Fallback para arquivo local
+    }
+  }
+  
+  // Fallback: arquivo local
+  const filePath = getDataFilePath("categories.json");
+  const list = await readJsonFile<Category[]>(filePath, []);
+  const idx = list.findIndex((c) => c.slug === body.slug);
+  if (idx === -1) list.push({ slug: String(body.slug), title: String(body.title) });
+  else list[idx] = { slug: String(body.slug), title: String(body.title) };
+  await writeJsonFile(filePath, list);
+  return NextResponse.json({ ok: true });
+}
+
+export async function DELETE(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const slug = searchParams.get("slug");
+  if (!slug) return NextResponse.json({ ok: false }, { status: 400 });
+  
+  const supabase = getSupabase();
+  if (supabase) {
+    try {
+      const { error } = await supabase
+        .from("categories")
+        .delete()
+        .eq("slug", slug);
+      if (error) throw error;
+      return NextResponse.json({ ok: true });
+    } catch (e) {
+      console.error("Supabase error:", e);
+      // Fallback para arquivo local
+    }
+  }
+  
+  // Fallback: arquivo local
+  const filePath = getDataFilePath("categories.json");
+  const list = await readJsonFile<Category[]>(filePath, []);
+  const next = list.filter((c) => c.slug !== slug);
+  await writeJsonFile(filePath, next);
+  return NextResponse.json({ ok: true });
+}
+
+
