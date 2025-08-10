@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDataFilePath, readJsonFile, writeJsonFile } from "@/lib/fsData";
 import { getSupabase } from "@/lib/supabase";
+import { getCurrentDateSP } from "@/lib/date";
 
 type CommentItem = {
   id: string;
@@ -39,7 +40,7 @@ export async function POST(req: NextRequest) {
     if (!slug || !name || !message) {
       return NextResponse.json({ error: "missing fields" }, { status: 400 });
     }
-    const now = new Date().toISOString();
+    const now = getCurrentDateSP().toISOString();
     const supabase = getSupabase();
     if (supabase) {
       const { data, error } = await supabase

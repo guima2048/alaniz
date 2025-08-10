@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { formatDateSP } from "@/lib/date";
 
 type CommentItem = {
   id: string;
@@ -85,7 +86,7 @@ export function Comments({ slug }: { slug: string }) {
           <li key={c.id} className="border rounded p-3 bg-white">
             <div className="text-sm text-neutral-600">
               <span className="font-medium">{c.name}</span>
-              <span> · {new Date(c.createdAt).toLocaleString()}</span>
+              <span> · {formatDateSP(c.createdAt)}</span>
             </div>
             <p className="mt-1 whitespace-pre-wrap">{c.message}</p>
           </li>

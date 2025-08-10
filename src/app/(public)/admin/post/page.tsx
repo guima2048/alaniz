@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { getCurrentDateSP } from "@/lib/date";
 
 type PostItem = {
   slug: string;
@@ -82,7 +83,7 @@ export default function AdminPostPage() {
   };
 
   const publishNow = () => {
-    updateSelected({ published_at: new Date().toISOString() });
+    updateSelected({ published_at: getCurrentDateSP().toISOString() });
   };
 
   const remove = async () => {
