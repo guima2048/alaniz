@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
   const supabase = getSupabase();
   if (supabase) {
     try {
-      const { data, error } = await supabase.storage
+      const { error } = await supabase.storage
         .from("media")
         .upload(`heroes/${filename}`, buffer, {
           contentType: file.type || "image/jpeg",

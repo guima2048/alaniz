@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
     all.push(item);
     await writeJsonFile(file, all);
     return NextResponse.json(item, { status: 201 });
-  } catch (e) {
+  } catch {
     return NextResponse.json({ error: "invalid json" }, { status: 400 });
   }
 }

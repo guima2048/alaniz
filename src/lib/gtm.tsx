@@ -1,3 +1,5 @@
+import Script from "next/script";
+
 export const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID || "";
 export const ga4 = {
   enabled: !!process.env.NEXT_PUBLIC_GA4_ID,
@@ -7,7 +9,9 @@ export const ga4 = {
 export function GTMSnippet() {
   if (!GTM_ID) return null;
   return (
-    <script
+    <Script
+      id="gtm-script"
+      strategy="afterInteractive"
       dangerouslySetInnerHTML={{
         __html: `
         (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':

@@ -22,7 +22,7 @@ export function RateForm({ slug }: Props) {
 
   useEffect(() => {
     void load();
-  }, [slug]);
+  }, [slug, load]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
