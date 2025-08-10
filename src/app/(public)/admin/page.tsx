@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 const FIXED_USERNAME = "admin";
@@ -25,7 +24,6 @@ export default function AdminLoginPage() {
   const [{ isLoggedIn }, setState] = useState<AuthState>({ isLoggedIn: false });
   const [stats, setStats] = useState<Stats>({ sites: 0, posts: 0, categories: 0, comments: 0 });
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
 
   useEffect(() => {
     setState(loadAuthState());

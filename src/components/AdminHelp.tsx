@@ -53,7 +53,7 @@ export function AdminHelp() {
             
             <div className="mt-4 p-2 bg-yellow-50 border border-yellow-200 rounded">
               <p className="text-yellow-800 text-xs">
-                <strong>💡 Dica:</strong> Para deletar, selecione um item e clique no botão "Excluir" (vermelho).
+                <strong>💡 Dica:</strong> Para deletar, selecione um item e clique no botão &quot;Excluir&quot; (vermelho).
               </p>
             </div>
           </div>
