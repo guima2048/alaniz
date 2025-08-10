@@ -4,10 +4,10 @@ import { usePathname } from "next/navigation";
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: "📊" },
-  { href: "/admin/site", label: "Sites", icon: "🌐" },
-  { href: "/admin/post", label: "Posts", icon: "📝" },
-  { href: "/admin/categorias", label: "Categorias", icon: "🏷️" },
-  { href: "/admin/sobre", label: "Sobre", icon: "ℹ️" },
+  { href: "/admin/site", label: "Sites", icon: "🌐", features: ["CRUD completo", "Deletar"] },
+  { href: "/admin/post", label: "Posts", icon: "📝", features: ["CRUD completo", "Deletar"] },
+  { href: "/admin/categorias", label: "Categorias", icon: "🏷️", features: ["CRUD completo", "Deletar"] },
+  { href: "/admin/sobre", label: "Sobre", icon: "ℹ️", features: ["Editar conteúdo"] },
 ];
 
 export function AdminNav() {
@@ -37,9 +37,13 @@ export function AdminNav() {
                         ? "bg-neutral-900 text-white"
                         : "text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100"
                     }`}
+                    title={item.features?.join(", ")}
                   >
                     <span className="mr-2">{item.icon}</span>
                     {item.label}
+                    {item.features?.includes("Deletar") && (
+                      <span className="ml-1 text-xs bg-red-100 text-red-700 px-1 rounded">🗑️</span>
+                    )}
                   </Link>
                 );
               })}
@@ -79,9 +83,13 @@ export function AdminNav() {
                       ? "bg-neutral-900 text-white"
                       : "text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100"
                   }`}
+                  title={item.features?.join(", ")}
                 >
                   <span className="mr-2">{item.icon}</span>
                   {item.label}
+                  {item.features?.includes("Deletar") && (
+                    <span className="ml-1 text-xs bg-red-100 text-red-700 px-1 rounded">🗑️</span>
+                  )}
                 </Link>
               );
             })}

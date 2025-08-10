@@ -1,4 +1,5 @@
 import { AdminNav } from "@/components/AdminNav";
+import { AdminHelp } from "@/components/AdminHelp";
 
 export default function AdminLayout({
   children,
@@ -11,6 +12,7 @@ export default function AdminLayout({
       <main className="py-6">
         {children}
       </main>
+      <AdminHelp />
     </div>
   );
 }
