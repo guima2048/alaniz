@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { StarRatingDisplay, StarSelector } from "./Stars";
 
 type Props = { slug: string };
@@ -15,14 +15,14 @@ export function RateForm({ slug }: Props) {
   const [ok, setOk] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
-  const load = async () => {
+  const load = useCallback(async () => {
     const res = await fetch(`/api/ratings?slug=${encodeURIComponent(slug)}`, { cache: "no-store" });
     if (res.ok) setData(await res.json());
-  };
+  }, [slug]);
 
   useEffect(() => {
     void load();
-  }, [slug, load]);
+  }, [load]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
