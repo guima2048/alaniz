@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { CategoryChips } from "@/components/CategoryChips";
 import { Row } from "@/components/Row";
@@ -10,7 +10,7 @@ type Category = {
   title: string;
 };
 
-export default function HomePage() {
+function HomePageContent() {
   const searchParams = useSearchParams();
   const categoria = searchParams.get("categoria");
   const [query, setQuery] = useState("");
@@ -80,5 +80,31 @@ export default function HomePage() {
         />
       )}
     </div>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <Suspense fallback={
+      <div className="container mx-auto px-4 py-6 space-y-8">
+        <div className="text-center">
+          <h2 className="text-xl font-medium tracking-tight">Avaliando os melhores sites de relacionamentos</h2>
+        </div>
+        <div className="flex flex-col gap-4">
+          <input
+            type="search"
+            placeholder="Buscar plataformas"
+            className="w-full rounded-md border border-neutral-200 bg-white px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-neutral-400"
+            aria-label="Buscar"
+            disabled
+          />
+          <div className="flex flex-wrap gap-2">
+            <div className="px-3 py-1 rounded-full text-sm border bg-gray-100 text-gray-400">Carregando...</div>
+          </div>
+        </div>
+      </div>
+    }>
+      <HomePageContent />
+    </Suspense>
   );
 }
