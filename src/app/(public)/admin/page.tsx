@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 
 const FIXED_USERNAME = "admin";
 const FIXED_PASSWORD = "casal1010";
@@ -35,7 +34,7 @@ export default function AdminLoginPage() {
     } else {
       alert("Usuário ou senha inválidos.");
     }
-  }, []);
+  }, [router]);
 
   const handleLogout = useCallback(() => {
     window.localStorage.removeItem(SESSION_KEY);
@@ -63,18 +62,12 @@ export default function AdminLoginPage() {
       );
     }
     return (
-      <div className="max-w-2xl mx-auto mt-16 p-6 border rounded-lg shadow-sm bg-white space-y-4">
+      <div className="max-w-2xl mx-auto mt-16 p-6 border rounded-lg shadow-sm bg-white space-y-3">
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-semibold">Admin</h1>
           <button onClick={handleLogout} className="px-3 py-2 text-sm rounded bg-gray-100 hover:bg-gray-200">Sair</button>
         </div>
-        <p>Escolha uma seção para gerenciar:</p>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <Link href="/admin/site" className="border rounded p-4 hover:bg-gray-50">ALANIZ.COM.BR (Sites)</Link>
-          <Link href="/admin/post" className="border rounded p-4 hover:bg-gray-50">Blog (Posts)</Link>
-          <Link href="/admin/sobre" className="border rounded p-4 hover:bg-gray-50">Página Sobre</Link>
-          <Link href="/admin/categorias" className="border rounded p-4 hover:bg-gray-50">Categorias</Link>
-        </div>
+        <p>Login simples habilitado. Aqui você poderá adicionar as funcionalidades do painel.</p>
       </div>
     );
   }, [isLoggedIn, handleLogin, handleLogout]);
