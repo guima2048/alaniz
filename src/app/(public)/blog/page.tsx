@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getDataFilePath, readJsonFile } from "@/lib/fsData";
+import { getSupabase } from "@/lib/supabase";
 
 type PostItem = {
   slug: string;
@@ -10,8 +10,26 @@ type PostItem = {
 };
 
 export default async function BlogIndexPage() {
-  const file = getDataFilePath("posts.json");
-  const posts = await readJsonFile<PostItem[]>(file, []);
+  const supabase = getSupabase();
+  let posts: PostItem[] = [];
+
+  if (supabase) {
+    // Usar Supabase
+    const { data, error } = await supabase
+      .from('posts')
+      .select('slug, title, excerpt, cover, published_at')
+      .order('published_at', { ascending: false });
+    
+    if (!error && data) {
+      posts = data;
+    }
+  } else {
+    // Fallback para arquivo local
+    const { getDataFilePath, readJsonFile } = await import("@/lib/fsData");
+    const file = getDataFilePath("posts.json");
+    posts = await readJsonFile<PostItem[]>(file, []);
+  }
+
   const now = Date.now();
   const published = posts
     .filter((p) => !p.published_at || new Date(p.published_at).getTime() <= now)

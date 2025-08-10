@@ -1,18 +1,51 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { CategoryChips } from "@/components/CategoryChips";
 import { Row } from "@/components/Row";
-import { categories, type SiteItem } from "@/lib/site";
+
+type SiteItem = {
+  slug: string;
+  name: string;
+  url: string;
+  logo?: string;
+  cover?: string;
+  short_desc?: string;
+  categories?: string[];
+  price_min?: number;
+  price_model?: string;
+  style?: string;
+  audience?: string;
+  privacy_level?: string;
+  editorial_score?: number;
+  rating_avg?: number;
+  rating_count?: number;
+  features?: string[];
+  hero?: string;
+};
+
+type Category = {
+  slug: string;
+  title: string;
+};
 
 export default function HomePage() {
+  const searchParams = useSearchParams();
+  const categoria = searchParams.get("categoria");
   const [query, setQuery] = useState("");
   const [sites, setSites] = useState<SiteItem[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch("/api/sites", { cache: "no-store" });
-        if (res.ok) setSites(await res.json());
+        // Buscar sites
+        const sitesRes = await fetch("/api/sites", { cache: "no-store" });
+        if (sitesRes.ok) setSites(await sitesRes.json());
+
+        // Buscar categorias
+        const categoriesRes = await fetch("/api/categories", { cache: "no-store" });
+        if (categoriesRes.ok) setCategories(await categoriesRes.json());
       } catch (e) {
         console.error(e);
       }
@@ -20,10 +53,21 @@ export default function HomePage() {
   }, []);
 
   const results = useMemo(() => {
+    let filteredSites = sites;
+    
+    // Filtrar por categoria se especificada
+    if (categoria) {
+      filteredSites = sites.filter((s) => (s.categories || []).includes(categoria));
+    }
+    
+    // Filtrar por busca
     const q = query.trim().toLowerCase();
-    if (!q) return [] as SiteItem[];
-    return sites.filter((s) => [s.name, s.short_desc || "", s.slug].some((v) => v?.toLowerCase().includes(q)));
-  }, [query, sites]);
+    if (!q) return filteredSites;
+    
+    return filteredSites.filter((s) => 
+      [s.name, s.short_desc || "", s.slug].some((v) => v?.toLowerCase().includes(q))
+    );
+  }, [query, sites, categoria]);
 
   return (
     <div className="container mx-auto px-4 py-6 space-y-8">
@@ -39,14 +83,21 @@ export default function HomePage() {
           className="w-full rounded-md border border-neutral-200 bg-white px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-neutral-400"
           aria-label="Buscar"
         />
-        <CategoryChips />
+        <CategoryChips categories={categories} />
       </div>
 
       {query && results.length > 0 && <Row title="Resultados" sites={results} />}
 
-      {categories.map((c) => (
+      {!query && !categoria && categories.map((c) => (
         <Row key={c.slug} title={c.title} sites={sites.filter((s) => (s.categories || []).includes(c.slug))} />
       ))}
+
+      {!query && categoria && (
+        <Row 
+          title={categories.find(c => c.slug === categoria)?.title || categoria} 
+          sites={results} 
+        />
+      )}
     </div>
   );
 }

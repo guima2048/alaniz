@@ -1,4 +1,4 @@
-import { categories } from "@/lib/site";
+import { getSupabase } from "@/lib/supabase";
 import { getBaseUrl } from "@/lib/url";
 import { siteTitle } from "@/lib/seo";
 import type { Metadata } from "next";
@@ -14,13 +14,45 @@ type SiteItem = {
   categories: string[];
 };
 
-export function generateStaticParams() {
+type Category = {
+  slug: string;
+  title: string;
+};
+
+export async function generateStaticParams() {
+  const supabase = getSupabase();
+  let categories: Category[] = [];
+
+  if (supabase) {
+    const { data } = await supabase
+      .from('categories')
+      .select('slug, title');
+    if (data) categories = data;
+  } else {
+    const cats = await import("@/data/categories.json");
+    categories = cats.default;
+  }
+
   return categories.map((c) => ({ slug: c.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
   const { slug } = await params;
-  const category = categories.find((c) => c.slug === slug);
+  const supabase = getSupabase();
+  let category: Category | undefined;
+
+  if (supabase) {
+    const { data } = await supabase
+      .from('categories')
+      .select('slug, title')
+      .eq('slug', slug)
+      .single();
+    if (data) category = data;
+  } else {
+    const cats = await import("@/data/categories.json");
+    category = cats.default.find((c: Category) => c.slug === slug);
+  }
+
   return {
     title: siteTitle(category ? category.title : "Categoria"),
     description: `Lista de sites em ${category?.title ?? "categoria"}.`,
@@ -29,10 +61,35 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
 
 export default async function CategoryPage({ params }: { params: Promise<Params> }) {
   const { slug } = await params;
-  const category = categories.find((c) => c.slug === slug);
-  const res = await fetch(`${getBaseUrl()}/api/sites`, { cache: "no-store" });
-  const allSites = (res.ok ? await res.json() : []) as SiteItem[];
-  const sites = allSites.filter((s) => (s.categories || []).includes(slug));
+  const supabase = getSupabase();
+  let category: Category | undefined;
+  let sites: SiteItem[] = [];
+
+  if (supabase) {
+    // Buscar categoria
+    const { data: catData } = await supabase
+      .from('categories')
+      .select('slug, title')
+      .eq('slug', slug)
+      .single();
+    if (catData) category = catData;
+
+    // Buscar sites da categoria
+    const { data: sitesData } = await supabase
+      .from('sites')
+      .select('*');
+    if (sitesData) {
+      sites = sitesData.filter((s) => (s.categories || []).includes(slug));
+    }
+  } else {
+    // Fallback para arquivo local
+    const cats = await import("@/data/categories.json");
+    category = cats.default.find((c: Category) => c.slug === slug);
+    
+    const res = await fetch(`${getBaseUrl()}/api/sites`, { cache: "no-store" });
+    const allSites = (res.ok ? await res.json() : []) as SiteItem[];
+    sites = allSites.filter((s) => (s.categories || []).includes(slug));
+  }
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
