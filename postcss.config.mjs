@@ -1,10 +1,9 @@
 const config = {
   plugins: [
     "@tailwindcss/postcss",
-    // Otimizações adicionais para produção
+    // Otimizações básicas para produção
     ...(process.env.NODE_ENV === 'production' ? [
-      'autoprefixer',
-      'cssnano'
+      'autoprefixer'
     ] : [])
   ],
 };

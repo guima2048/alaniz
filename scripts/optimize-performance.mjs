@@ -9,12 +9,12 @@ const optimizations = [
   {
     name: 'Next.js Config',
     file: 'next.config.ts',
-    check: (content) => content.includes('optimizeCss') && content.includes('swcMinify')
+    check: (content) => content.includes('optimizePackageImports') && content.includes('compress')
   },
   {
     name: 'PostCSS Config',
     file: 'postcss.config.mjs',
-    check: (content) => content.includes('cssnano') && content.includes('autoprefixer')
+    check: (content) => content.includes('autoprefixer')
   },
   {
     name: 'Critical CSS',
@@ -25,6 +25,11 @@ const optimizations = [
     name: 'Layout Otimizado',
     file: 'src/app/layout.tsx',
     check: (content) => content.includes('CriticalCSS') && content.includes('defer')
+  },
+  {
+    name: 'ESLint Config',
+    file: '.eslintrc.json',
+    check: (content) => content.includes('@next/next/no-img-element')
   }
 ];
 
@@ -50,11 +55,11 @@ console.log('\n📊 MELHORIAS IMPLEMENTADAS:');
 console.log('-'.repeat(30));
 console.log('✅ CSS Crítico inline para renderização imediata');
 console.log('✅ Carregamento assíncrono de CSS não crítico');
-console.log('✅ Otimizações de PostCSS (cssnano + autoprefixer)');
+console.log('✅ Otimizações de PostCSS (autoprefixer)');
 console.log('✅ Configurações de webpack para otimização de CSS');
 console.log('✅ Preload de recursos críticos');
 console.log('✅ Scripts deferidos para não bloquear renderização');
-console.log('✅ Otimizações de compressão e minificação');
+console.log('✅ Configuração ESLint para warnings controlados');
 
 console.log('\n🎯 RESULTADOS ESPERADOS:');
 console.log('-'.repeat(30));

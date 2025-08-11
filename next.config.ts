@@ -10,15 +10,10 @@ const nextConfig: NextConfig = {
   },
   // Otimizações de performance
   experimental: {
-    optimizeCss: true,
     optimizePackageImports: ['framer-motion'],
   },
   // Configurações de compressão
   compress: true,
-  // Otimizações de bundle
-  swcMinify: true,
-  // Configurações de cache
-  generateEtags: false,
   // Otimizações de CSS
   webpack: (config, { dev, isServer }) => {
     if (!dev && !isServer) {
