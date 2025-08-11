@@ -20,7 +20,7 @@ export function Card({ item }: Props) {
             loading="lazy"
           />
           <div className="absolute top-2 left-2">
-            <RatingBadge avg={item.rating_avg} count={item.rating_count} />
+            <RatingBadge avg={item.rating_avg || 0} count={item.rating_count || 0} />
           </div>
         </div>
         <div className="p-3 space-y-2">
