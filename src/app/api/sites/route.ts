@@ -29,7 +29,7 @@ export async function GET() {
       const { data, error } = await supabase
         .from("sites")
         .select("*")
-        .order("name");
+        .order("rating_avg", { ascending: false });
       if (error) throw error;
       return NextResponse.json(data || []);
     } catch (e) {

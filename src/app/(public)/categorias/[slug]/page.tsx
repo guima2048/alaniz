@@ -3,16 +3,9 @@ import { getBaseUrl } from "@/lib/url";
 import { siteTitle } from "@/lib/seo";
 import type { Metadata } from "next";
 import Image from "next/image";
+import type { SiteItem } from "@/lib/site";
 
 type Params = { slug: string };
-
-type SiteItem = {
-  slug: string;
-  name: string;
-  cover: string;
-  short_desc: string;
-  categories: string[];
-};
 
 type Category = {
   slug: string;
@@ -79,7 +72,13 @@ export default async function CategoryPage({ params }: { params: Promise<Params>
       .from('sites')
       .select('*');
     if (sitesData) {
-      sites = sitesData.filter((s) => (s.categories || []).includes(slug));
+      if (slug === 'todos') {
+        sites = sitesData;
+      } else {
+        sites = sitesData.filter((s) => (s.categories || []).includes(slug));
+      }
+      // Ordenar por nota do público (rating_avg) em ordem decrescente
+      sites = sites.sort((a, b) => (b.rating_avg || 0) - (a.rating_avg || 0));
     }
   } else {
     // Fallback para arquivo local
@@ -88,7 +87,13 @@ export default async function CategoryPage({ params }: { params: Promise<Params>
     
     const res = await fetch(`${getBaseUrl()}/api/sites`, { cache: "no-store" });
     const allSites = (res.ok ? await res.json() : []) as SiteItem[];
-    sites = allSites.filter((s) => (s.categories || []).includes(slug));
+    if (slug === 'todos') {
+      sites = allSites;
+    } else {
+      sites = allSites.filter((s) => (s.categories || []).includes(slug));
+    }
+    // Ordenar por nota do público (rating_avg) em ordem decrescente
+    sites = sites.sort((a, b) => (b.rating_avg || 0) - (a.rating_avg || 0));
   }
 
   return (

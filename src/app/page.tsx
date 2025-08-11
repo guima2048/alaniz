@@ -37,17 +37,24 @@ function HomePageContent() {
     let filteredSites = sites;
     
     // Filtrar por categoria se especificada
-    if (categoria) {
+    if (categoria && categoria !== 'todos') {
       filteredSites = sites.filter((s) => (s.categories || []).includes(categoria));
     }
+    // Se categoria for 'todos', mostrar todos os sites
     
     // Filtrar por busca
     const q = query.trim().toLowerCase();
-    if (!q) return filteredSites;
+    if (!q) {
+      // Ordenar por nota do público (rating_avg) em ordem decrescente
+      return filteredSites.sort((a, b) => (b.rating_avg || 0) - (a.rating_avg || 0));
+    }
     
-    return filteredSites.filter((s) => 
+    const searchResults = filteredSites.filter((s) => 
       [s.name, s.short_desc || "", s.slug].some((v) => v?.toLowerCase().includes(q))
     );
+    
+    // Ordenar resultados da busca por nota do público
+    return searchResults.sort((a, b) => (b.rating_avg || 0) - (a.rating_avg || 0));
   }, [query, sites, categoria]);
 
   return (
@@ -69,9 +76,22 @@ function HomePageContent() {
 
       {query && results.length > 0 && <Row title="Resultados" sites={results} />}
 
-      {!query && !categoria && categories.map((c) => (
-        <Row key={c.slug} title={c.title} sites={sites.filter((s) => (s.categories || []).includes(c.slug))} />
-      ))}
+      {!query && !categoria && categories.map((c) => {
+        const categorySites = c.slug === 'todos' 
+          ? sites 
+          : sites.filter((s) => (s.categories || []).includes(c.slug));
+        
+        // Ordenar sites da categoria por nota do público
+        const sortedSites = categorySites.sort((a, b) => (b.rating_avg || 0) - (a.rating_avg || 0));
+        
+        return (
+          <Row 
+            key={c.slug} 
+            title={c.title} 
+            sites={sortedSites} 
+          />
+        );
+      })}
 
       {!query && categoria && (
         <Row 
