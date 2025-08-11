@@ -44,7 +44,9 @@ export function OptimizedImage({
   // Se a imagem é externa ou não suportada pelo next/image, usar img normal
   if (src.startsWith('http') || src.includes('data:') || !src.startsWith('/')) {
     return (
-      <img
+      <>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
         src={src}
         alt={alt}
         width={width}
@@ -60,7 +62,8 @@ export function OptimizedImage({
           aspectRatio: `${width}/${height}`,
           objectFit: 'cover'
         }}
-      />
+        />
+      </>
     );
   }
 

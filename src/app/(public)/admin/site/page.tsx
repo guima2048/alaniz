@@ -72,7 +72,7 @@ export default function SiteEditorPage() {
         console.error(e);
       }
     })();
-  }, [isAuthorized]);
+  }, [isAuthorized, selectedSlug]);
 
   // Se não houver seleção, seleciona o primeiro da lista sempre que a lista atualizar
   useEffect(() => {
@@ -230,6 +230,7 @@ export default function SiteEditorPage() {
                   ))}
                 </select>
                 <div className="flex items-center gap-2 mt-2">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   {selected.logo ? <img src={selected.logo} alt="logo" className="h-10" /> : null}
                   <form
                     onChange={async (e) => {
@@ -280,6 +281,7 @@ export default function SiteEditorPage() {
                   ))}
                 </select>
                 <div className="flex items-center gap-2 mt-2">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   {selected.cover ? <img src={selected.cover} alt="capa" className="h-20 object-contain" /> : null}
                   <form
                     onChange={async (e) => {
@@ -329,6 +331,7 @@ export default function SiteEditorPage() {
                   ))}
                 </select>
                 <div className="flex items-center gap-2 mt-2">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   {selected.hero ? <img src={selected.hero} alt="hero" className="h-28 object-cover" /> : null}
                   <form
                     onChange={async (e) => {

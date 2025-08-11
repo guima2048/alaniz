@@ -35,7 +35,7 @@ export default function AdminCategoriasPage() {
         console.error(e);
       }
     })();
-  }, [ok]);
+  }, [ok, selectedSlug]);
 
   useEffect(() => {
     if (!selectedSlug && cats.length) setSelectedSlug(cats[0].slug);

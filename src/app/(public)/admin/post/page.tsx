@@ -49,7 +49,7 @@ export default function AdminPostPage() {
         console.error(e);
       }
     })();
-  }, [ok]);
+  }, [ok, selectedSlug]);
 
   useEffect(() => {
     if (!selectedSlug && posts.length) setSelectedSlug(posts[0].slug);
@@ -167,6 +167,7 @@ export default function AdminPostPage() {
                   ))}
                 </select>
                 <div className="flex items-center gap-2 mt-2">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   {selected.cover ? <img src={selected.cover} alt="capa" className="h-20 object-contain" /> : null}
                   <form
                     onChange={async (e) => {

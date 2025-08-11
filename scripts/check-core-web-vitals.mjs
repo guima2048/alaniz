@@ -2,8 +2,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { execSync } from 'node:child_process';
 
-console.log('📊 VERIFICANDO CORE WEB VITALS');
-console.log('='.repeat(50));
+if (!(process.env.CI || process.env.VERCEL)) {
+  console.log('📊 VERIFICANDO CORE WEB VITALS');
+  console.log('='.repeat(50));
+}
 
 // Thresholds mínimos para Core Web Vitals
 const THRESHOLDS = {
@@ -18,8 +20,10 @@ function checkLighthouseReport() {
   const reportPath = path.join(process.cwd(), 'lighthouse-report.json');
   
   if (!fs.existsSync(reportPath)) {
-    console.log('⚠️ Relatório Lighthouse não encontrado.');
-    console.log('Execute: pnpm lighthouse');
+    if (!(process.env.CI || process.env.VERCEL)) {
+      console.log('⚠️ Relatório Lighthouse não encontrado.');
+      console.log('Execute: pnpm lighthouse');
+    }
     return false;
   }
 
@@ -27,8 +31,10 @@ function checkLighthouseReport() {
     const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
     const audits = report.audits;
     
-    console.log('\n📈 RESULTADOS CORE WEB VITALS:');
-    console.log('-'.repeat(30));
+    if (!(process.env.CI || process.env.VERCEL)) {
+      console.log('\n📈 RESULTADOS CORE WEB VITALS:');
+      console.log('-'.repeat(30));
+    }
     
     const metrics = {
       LCP: audits['largest-contentful-paint']?.numericValue,
@@ -42,7 +48,7 @@ function checkLighthouseReport() {
     
     for (const [metric, value] of Object.entries(metrics)) {
       if (value === undefined) {
-        console.log(`❌ ${metric}: Não disponível`);
+        if (!(process.env.CI || process.env.VERCEL)) console.log(`❌ ${metric}: Não disponível`);
         allPassed = false;
         continue;
       }
@@ -52,7 +58,7 @@ function checkLighthouseReport() {
       const status = passed ? '✅' : '❌';
       const color = passed ? 'verde' : 'vermelho';
       
-      console.log(`${status} ${metric}: ${value.toFixed(0)}ms (limite: ${threshold}ms) - ${color}`);
+      if (!(process.env.CI || process.env.VERCEL)) console.log(`${status} ${metric}: ${value.toFixed(0)}ms (limite: ${threshold}ms) - ${color}`);
       
       if (!passed) {
         allPassed = false;
@@ -61,10 +67,10 @@ function checkLighthouseReport() {
 
     // Verificar score geral
     const performanceScore = report.categories?.performance?.score * 100;
-    console.log(`\n📊 Performance Score: ${performanceScore?.toFixed(0)}/100`);
+    if (!(process.env.CI || process.env.VERCEL)) console.log(`\n📊 Performance Score: ${performanceScore?.toFixed(0)}/100`);
     
     if (performanceScore < 90) {
-      console.log('⚠️ Performance score abaixo de 90. Otimizações recomendadas.');
+      if (!(process.env.CI || process.env.VERCEL)) console.log('⚠️ Performance score abaixo de 90. Otimizações recomendadas.');
       allPassed = false;
     }
 
@@ -77,6 +83,7 @@ function checkLighthouseReport() {
 }
 
 function suggestOptimizations() {
+  if (process.env.CI || process.env.VERCEL) return;
   console.log('\n🔧 SUGESTÕES DE OTIMIZAÇÃO:');
   console.log('-'.repeat(30));
   console.log('📸 LCP (Largest Contentful Paint):');
@@ -109,23 +116,22 @@ function checkServerRunning() {
 }
 
 async function main() {
-  if (!checkServerRunning()) {
-    console.log('⚠️ Servidor não está rodando em localhost:3000');
-    console.log('Execute: pnpm dev');
-    console.log('Em outro terminal: pnpm lighthouse');
-    return;
-  }
+  if (!checkServerRunning()) return;
 
   const passed = checkLighthouseReport();
   
   if (!passed) {
     suggestOptimizations();
-    console.log('\n❌ Core Web Vitals não atingiram os thresholds mínimos!');
-    console.log('Otimize antes de fazer deploy.');
+    if (!(process.env.CI || process.env.VERCEL)) {
+      console.log('\n❌ Core Web Vitals não atingiram os thresholds mínimos!');
+      console.log('Otimize antes de fazer deploy.');
+    }
     process.exit(1);
   } else {
-    console.log('\n🎉 TODOS OS CORE WEB VITALS ESTÃO NO VERDE!');
-    console.log('✅ Pronto para deploy com excelente performance.');
+    if (!(process.env.CI || process.env.VERCEL)) {
+      console.log('\n🎉 TODOS OS CORE WEB VITALS ESTÃO NO VERDE!');
+      console.log('✅ Pronto para deploy com excelente performance.');
+    }
   }
 }
 

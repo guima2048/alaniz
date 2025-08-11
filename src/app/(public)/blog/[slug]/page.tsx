@@ -36,6 +36,7 @@ export default async function PostPage({ params }: { params: Promise<Params> }) 
     <div className="container mx-auto px-4 py-8 space-y-4">
       <h1 className="text-3xl font-semibold">{post.title}</h1>
       {post.excerpt ? <p className="text-neutral-700">{post.excerpt}</p> : null}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       {post.cover ? <img src={post.cover} alt={post.title} className="w-full max-h-96 object-cover rounded" /> : null}
       <article className="prose max-w-none whitespace-pre-wrap">{post.content}</article>
     </div>
