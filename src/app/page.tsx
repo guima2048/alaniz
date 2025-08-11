@@ -8,6 +8,7 @@ import type { SiteItem } from "@/lib/site";
 type Category = {
   slug: string;
   title: string;
+  order?: number;
 };
 
 function HomePageContent() {

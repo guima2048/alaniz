@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
-type Category = { slug: string; title: string };
+type Category = { slug: string; title: string; order?: number };
 
 async function fetchJson<T>(url: string): Promise<T> {
   const res = await fetch(url, { cache: "no-store" });
@@ -88,9 +88,18 @@ export default function AdminCategoriasPage() {
       <aside className="border rounded bg-white">
         <div className="p-3 border-b font-medium flex items-center justify-between">
           <span>Categorias</span>
-          <button type="button" className="text-sm px-2 py-1 rounded bg-emerald-600 text-white hover:bg-emerald-700" onClick={addNew}>
-            Adicionar categoria
-          </button>
+          <div className="flex gap-2">
+            <button 
+              type="button" 
+              className="text-sm px-2 py-1 rounded bg-blue-600 text-white hover:bg-blue-700"
+              onClick={() => router.push("/admin/categorias/ordem")}
+            >
+              Gerenciar Ordem
+            </button>
+            <button type="button" className="text-sm px-2 py-1 rounded bg-emerald-600 text-white hover:bg-emerald-700" onClick={addNew}>
+              Adicionar categoria
+            </button>
+          </div>
         </div>
         <ul className="max-h-[70vh] overflow-auto">
           {cats.map((c) => (
