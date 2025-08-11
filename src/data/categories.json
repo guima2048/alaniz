@@ -1,9 +1,27 @@
 [
-  { "slug": "todos", "title": "Todos os Sites", "order": 1 },
-  { "slug": "sugar", "title": "Relacionamentos Premium", "order": 2 },
-  { "slug": "estilo-tinder", "title": "Apps de Match (Swipe)", "order": 3 },
-  { "slug": "cristao", "title": "Comunidade Cristã", "order": 4 },
-  { "slug": "nicho", "title": "Nichos Especiais", "order": 5 }
+  {
+    "slug": "todos",
+    "title": "Todos os Sites",
+    "order": 1
+  },
+  {
+    "slug": "sugar",
+    "title": "Relacionamentos Premium",
+    "order": 2
+  },
+  {
+    "slug": "estilo-tinder",
+    "title": "Apps de Match (Swipe)",
+    "order": 3
+  },
+  {
+    "slug": "cristao",
+    "title": "Comunidade Cristã",
+    "order": 4
+  },
+  {
+    "slug": "nicho",
+    "title": "Nichos Especiais",
+    "order": 5
+  }
 ]
-
-
