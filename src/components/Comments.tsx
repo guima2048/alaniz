@@ -8,6 +8,7 @@ type CommentItem = {
   name: string;
   message: string;
   createdAt: string;
+  status?: 'pending' | 'approved' | 'rejected';
 };
 
 export function Comments({ slug }: { slug: string }) {
@@ -15,6 +16,7 @@ export function Comments({ slug }: { slug: string }) {
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -38,9 +40,13 @@ export function Comments({ slug }: { slug: string }) {
         body: JSON.stringify({ slug, name: name.trim(), message: message.trim() }),
       });
       if (res.ok) {
-        const created = (await res.json()) as CommentItem;
-        setItems((prev) => [...prev, created]);
+        setSubmitted(true);
         setMessage("");
+        setName("");
+        // Recarregar comentários após alguns segundos
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
       }
     } finally {
       setLoading(false);
@@ -50,6 +56,15 @@ export function Comments({ slug }: { slug: string }) {
   return (
     <section className="space-y-4">
       <h2 className="text-lg font-semibold">Comentários</h2>
+      
+      {submitted && (
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+          <p className="text-green-800 text-sm">
+            ✅ Seu comentário foi enviado e está aguardando moderação. Ele aparecerá aqui assim que for aprovado.
+          </p>
+        </div>
+      )}
+      
       <form onSubmit={handleSubmit} className="space-y-2">
         <div className="flex gap-2">
           <input

@@ -215,6 +215,17 @@ export default function AdminLoginPage() {
           </Link>
 
           <Link 
+            href="/admin/comentarios" 
+            className="bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow"
+          >
+            <div className="flex items-center mb-4">
+              <span className="text-3xl mr-3">💬</span>
+              <h3 className="text-lg font-semibold">Moderação de Comentários</h3>
+            </div>
+            <p className="text-neutral-600 text-sm">Aprove, rejeite ou exclua comentários dos usuários.</p>
+          </Link>
+
+          <Link 
             href="/admin/sobre" 
             className="bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow"
           >
