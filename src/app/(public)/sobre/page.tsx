@@ -31,11 +31,31 @@ export default async function Page() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 prose">
-      <h1>{data.title}</h1>
-      {data.paragraphs.map((p, i) => (
-        <p key={i}>{p}</p>
-      ))}
+    <div className="container mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto prose prose-lg">
+        <h1 className="text-3xl font-bold mb-8">{data.title}</h1>
+        
+        <div className="space-y-6">
+          {data.paragraphs.map((p, i) => {
+            // Verificar se é um título (texto curto sem pontuação no final)
+            const isTitle = p.length < 50 && !p.endsWith('.') && !p.endsWith('!') && !p.endsWith('?');
+            
+            if (isTitle) {
+              return (
+                <h2 key={i} className="text-xl font-semibold mt-8 mb-4 text-gray-900">
+                  {p}
+                </h2>
+              );
+            } else {
+              return (
+                <p key={i} className="text-gray-700 leading-relaxed">
+                  {p}
+                </p>
+              );
+            }
+          })}
+        </div>
+      </div>
     </div>
   );
 }

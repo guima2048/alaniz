@@ -119,6 +119,17 @@ function HomePageContent() {
           sites={results} 
         />
       )}
+
+      {/* Resumo do Alaniz - sempre no final */}
+      {!query && (
+        <div className="mt-12 pt-8 border-t border-gray-200">
+          <div className="max-w-3xl mx-auto text-center">
+            <p className="text-lg text-gray-700 leading-relaxed">
+              O Alaniz existe para proteger seu tempo e seu bolso — com testes sérios, notas honestas e decisões fáceis de tomar. Sem fanfarra. Sem filtro. Com a frieza dos dados e a elegância de quem respeita você.
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
