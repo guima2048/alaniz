@@ -4,23 +4,36 @@ import { useEffect } from 'react';
 
 export function CriticalCSS() {
   useEffect(() => {
-    // Carregar CSS não crítico de forma assíncrona
+    // Carregar CSS não crítico de forma assíncrona após a renderização inicial
     const loadNonCriticalCSS = () => {
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = '/_next/static/css/app.css'; // CSS compilado do Tailwind
-      link.media = 'print';
-      link.onload = () => {
-        link.media = 'all';
+      // Carregar CSS não crítico (Tailwind + estilos adicionais)
+      const nonCriticalLink = document.createElement('link');
+      nonCriticalLink.rel = 'stylesheet';
+      nonCriticalLink.href = '/_next/static/css/non-critical.css';
+      nonCriticalLink.media = 'print';
+      nonCriticalLink.onload = () => {
+        nonCriticalLink.media = 'all';
       };
-      document.head.appendChild(link);
+      nonCriticalLink.onerror = () => {
+        // Fallback: tentar carregar o CSS padrão do Next.js
+        const fallbackLink = document.createElement('link');
+        fallbackLink.rel = 'stylesheet';
+        fallbackLink.href = '/_next/static/css/app.css';
+        fallbackLink.media = 'print';
+        fallbackLink.onload = () => {
+          fallbackLink.media = 'all';
+        };
+        document.head.appendChild(fallbackLink);
+      };
+      document.head.appendChild(nonCriticalLink);
     };
 
     // Carregar CSS não crítico após a renderização inicial
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', loadNonCriticalCSS);
     } else {
-      loadNonCriticalCSS();
+      // Se o DOM já está carregado, aguardar um frame para não bloquear
+      requestAnimationFrame(loadNonCriticalCSS);
     }
   }, []);
 

@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import "./globals.css";
-import "./critical.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { GTMNoScript, GTMSnippet } from "@/lib/gtm";
@@ -16,6 +14,85 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <head>
+        {/* CSS Crítico inline para renderização imediata */}
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            /* CSS Crítico - Carregado inline para renderização imediata */
+            
+            /* Reset básico */
+            * {
+              box-sizing: border-box;
+              margin: 0;
+              padding: 0;
+            }
+            
+            /* Estilos base críticos */
+            html {
+              font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+              line-height: 1.5;
+              -webkit-text-size-adjust: 100%;
+              -moz-text-size-adjust: 100%;
+              text-size-adjust: 100%;
+            }
+            
+            body {
+              background-color: #FAFAF7;
+              color: #171717;
+              font-family: inherit;
+              font-size: 16px;
+              line-height: 1.6;
+              text-rendering: optimizeSpeed;
+              -webkit-font-smoothing: antialiased;
+              -moz-osx-font-smoothing: grayscale;
+              overflow-x: hidden;
+            }
+            
+            /* Classes críticas do Tailwind */
+            .bg-\\[#FAFAF7\\] {
+              background-color: #FAFAF7;
+            }
+            
+            .text-neutral-900 {
+              color: #171717;
+            }
+            
+            .antialiased {
+              -webkit-font-smoothing: antialiased;
+              -moz-osx-font-smoothing: grayscale;
+            }
+            
+            .min-h-\\[70vh\\] {
+              min-height: 70vh;
+            }
+            
+            /* Prevenção de layout shift */
+            img, video, canvas, audio, iframe, embed, object {
+              display: block;
+              max-width: 100%;
+              height: auto;
+            }
+            
+            /* Otimizações de performance */
+            a {
+              color: inherit;
+              text-decoration: none;
+            }
+            
+            button {
+              background: none;
+              border: none;
+              cursor: pointer;
+              font: inherit;
+            }
+            
+            /* FOUC prevention */
+            html {
+              visibility: visible;
+              opacity: 1;
+            }
+          `
+        }} />
+        
         {/* Preload de recursos críticos */}
         <link rel="preload" href="/favicon.ico" as="image" type="image/x-icon" />
         <link rel="preload" href="/favicon.svg" as="image" type="image/svg+xml" />
