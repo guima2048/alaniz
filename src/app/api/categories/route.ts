@@ -8,10 +8,24 @@ export async function GET() {
   const supabase = getSupabase();
   if (supabase) {
     try {
+      // Tentar buscar com order primeiro
       const { data, error } = await supabase
         .from("categories")
         .select("*")
         .order("order", { ascending: true });
+      
+      if (error && error.message.includes("order")) {
+        // Se der erro com order, tentar sem order
+        console.log("⚠️ Coluna order não existe, usando fallback...");
+        const { data: dataWithoutOrder, error: errorWithoutOrder } = await supabase
+          .from("categories")
+          .select("*")
+          .order("title", { ascending: true });
+        
+        if (errorWithoutOrder) throw errorWithoutOrder;
+        return NextResponse.json(dataWithoutOrder || []);
+      }
+      
       if (error) throw error;
       return NextResponse.json(data || []);
     } catch (e) {
@@ -40,9 +54,24 @@ export async function PUT(req: NextRequest) {
   const supabase = getSupabase();
   if (supabase) {
     try {
+      // Remover order se não existir na tabela
+      const categoryData = { slug: body.slug, title: body.title };
+      
       const { error } = await supabase
         .from("categories")
-        .upsert(body, { onConflict: "slug" });
+        .upsert(categoryData, { onConflict: "slug" });
+      
+      if (error && error.message.includes("order")) {
+        // Se der erro com order, tentar sem order
+        console.log("⚠️ Coluna order não existe, salvando sem order...");
+        const { error: errorWithoutOrder } = await supabase
+          .from("categories")
+          .upsert(categoryData, { onConflict: "slug" });
+        
+        if (errorWithoutOrder) throw errorWithoutOrder;
+        return NextResponse.json({ ok: true });
+      }
+      
       if (error) throw error;
       return NextResponse.json({ ok: true });
     } catch (e) {
