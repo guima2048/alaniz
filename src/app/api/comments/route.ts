@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
         .select("id, slug, name, message, createdAt")
         .eq("slug", slug);
       
-      const { data, error } = await query.order("createdAt", { ascending: true });
+      const { data, error } = await query.order("createdAt", { ascending: false });
       if (error) {
         // Se der erro, pode ser que a coluna status não exista
         console.error("Supabase error:", error);
@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
           .from("comments")
           .select("id, slug, name, message, createdAt")
           .eq("slug", slug)
-          .order("createdAt", { ascending: true });
+          .order("createdAt", { ascending: false });
         
         if (fallbackError) return NextResponse.json({ error: fallbackError.message }, { status: 500 });
         
@@ -75,7 +75,7 @@ export async function GET(req: NextRequest) {
     list = list.filter((c) => c.status === "approved");
   }
   
-  list.sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+      list.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   return NextResponse.json(list);
 }
 
