@@ -1,69 +1,56 @@
-export const dynamic = "force-dynamic";
-import type { Metadata } from "next";
-import fs from "node:fs";
-import path from "node:path";
+import { notFound } from "next/navigation";
+import { getDataFilePath, readJsonFile } from "@/lib/fsData";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { RateForm } from "@/components/RateForm";
 import { Comments } from "@/components/Comments";
 import { VisitSiteButton } from "@/components/VisitSiteButton";
-import { getDataFilePath, readJsonFile } from "@/lib/fsData";
+import { HeroImage } from "@/components/OptimizedImage";
+import fs from "node:fs";
+import path from "node:path";
 
-
-type Params = { slug: string };
+type Params = {
+  slug: string;
+};
 
 type SiteItem = {
   slug: string;
   name: string;
   url: string;
-  logo?: string;
-  cover?: string;
-  short_desc?: string;
-  categories?: string[];
-  price_min?: number;
-  price_model?: string;
-  style?: string;
-  audience?: string;
-  privacy_level?: string;
-  editorial_score?: number;
-  rating_avg?: number;
-  rating_count?: number;
+  short_desc: string;
   features?: string[];
   hero?: string;
 };
 
-export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
-  const { slug } = await params;
+export async function generateStaticParams() {
   const file = getDataFilePath("sites.json");
-  const allSites = await readJsonFile<SiteItem[]>(file, []);
-  const site = allSites.find((s) => s.slug === slug);
-  return {
-    title: `${site?.name ?? "Plataforma"} | Lista de Relacionamentos` ,
-    description: site?.short_desc,
-  };
+  const sites = await readJsonFile<SiteItem[]>(file, []);
+  return sites.map((site) => ({
+    slug: site.slug,
+  }));
 }
 
 export default async function EditorialPage({ params }: { params: Promise<Params> }) {
   const { slug } = await params;
   const file = getDataFilePath("sites.json");
-  const allSites = await readJsonFile<SiteItem[]>(file, []);
-  const site = allSites.find((s) => s.slug === slug);
-  if (!site) return <div className="container mx-auto px-4 py-8">Não encontrado.</div>;
+  const sites = await readJsonFile<SiteItem[]>(file, []);
+  const site = sites.find((s) => s.slug === slug);
+
+  if (!site) {
+    notFound();
+  }
 
   const mdxPath = path.join(process.cwd(), "src", "content", "editoriais", `${slug}.mdx`);
   const hasMdx = fs.existsSync(mdxPath);
+
   const fallback = (
-    <div className="space-y-4">
+    <div className="prose max-w-none">
+      <h2>Sobre {site.name}</h2>
+      <p>{site.short_desc}</p>
       <p>
-        Esta é uma análise editorial neutra da plataforma {site.name}. Nosso foco
-        é descrever recursos, público e aspectos de privacidade sem promover
-        comportamentos sensíveis.
+        <a href={site.url} target="_blank" rel="noopener noreferrer">
+          Visitar {site.name}
+        </a>
       </p>
-      <ul className="list-disc pl-5 text-neutral-700">
-        <li>Preço mínimo: {site.price_min} ({site.price_model})</li>
-        <li>Estilo: {site.style}</li>
-        <li>Público: {site.audience}</li>
-        <li>Nível de privacidade: {site.privacy_level}</li>
-      </ul>
     </div>
   );
 
@@ -72,7 +59,11 @@ export default async function EditorialPage({ params }: { params: Promise<Params
       <header className="space-y-2">
         {Boolean(site.hero) && (
           <div className="w-full">
-            <img src={site.hero as string} alt="hero" className="w-full h-56 md:h-72 object-cover rounded" />
+            <HeroImage 
+              src={site.hero as string} 
+              alt={`Hero ${site.name}`} 
+              className="w-full h-56 md:h-72 rounded" 
+            />
           </div>
         )}
         <h1 className="text-2xl font-semibold text-neutral-900">{site.name}</h1>

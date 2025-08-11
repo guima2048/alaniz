@@ -6,10 +6,13 @@
     "dev": "next dev",
     "prebuild": "node scripts/build-data.mjs",
     "build": "next build",
+    "postbuild": "node scripts/generate-sitemap-gz.mjs && node scripts/check-core-web-vitals.mjs",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "check": "pnpm lint && pnpm typecheck && pnpm build"
+    "check": "pnpm lint && pnpm typecheck && pnpm build",
+    "lighthouse": "lighthouse http://localhost:3000 --output=json --output-path=./lighthouse-report.json --chrome-flags='--headless'",
+    "core-web-vitals": "node scripts/check-core-web-vitals.mjs"
   },
   "dependencies": {
     "clsx": "^2.1.1",
@@ -30,6 +33,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.4.6",
     "eslint-config-prettier": "^10.1.8",
+    "lighthouse": "^12.0.0",
     "prettier": "^3.6.2",
     "serve": "^14.2.4",
     "tailwindcss": "^4",

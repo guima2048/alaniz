@@ -1,99 +1,47 @@
-import { getSupabase } from "@/lib/supabase";
-import { getBaseUrl } from "@/lib/url";
-import { siteTitle } from "@/lib/seo";
-import type { Metadata } from "next";
-import Image from "next/image";
-import type { SiteItem } from "@/lib/site";
+import { notFound } from "next/navigation";
+import { getDataFilePath, readJsonFile } from "@/lib/fsData";
+import { CardImage } from "@/components/OptimizedImage";
 
-type Params = { slug: string };
+type Params = {
+  slug: string;
+};
 
-type Category = {
+type SiteItem = {
+  slug: string;
+  name: string;
+  cover: string;
+  short_desc: string;
+  categories?: string[];
+};
+
+type CategoryItem = {
   slug: string;
   title: string;
+  description?: string;
 };
 
 export async function generateStaticParams() {
-  const supabase = getSupabase();
-  let categories: Category[] = [];
-
-  if (supabase) {
-    const { data } = await supabase
-      .from('categories')
-      .select('slug, title');
-    if (data) categories = data;
-  } else {
-    const cats = await import("@/data/categories.json");
-    categories = cats.default;
-  }
-
-  return categories.map((c) => ({ slug: c.slug }));
-}
-
-export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
-  const { slug } = await params;
-  const supabase = getSupabase();
-  let category: Category | undefined;
-
-  if (supabase) {
-    const { data } = await supabase
-      .from('categories')
-      .select('slug, title')
-      .eq('slug', slug)
-      .single();
-    if (data) category = data;
-  } else {
-    const cats = await import("@/data/categories.json");
-    category = cats.default.find((c: Category) => c.slug === slug);
-  }
-
-  return {
-    title: siteTitle(category ? category.title : "Categoria"),
-    description: `Lista de sites em ${category?.title ?? "categoria"}.`,
-  };
+  const file = getDataFilePath("categories.json");
+  const categories = await readJsonFile<CategoryItem[]>(file, []);
+  return categories.map((category) => ({
+    slug: category.slug,
+  }));
 }
 
 export default async function CategoryPage({ params }: { params: Promise<Params> }) {
   const { slug } = await params;
-  const supabase = getSupabase();
-  let category: Category | undefined;
-  let sites: SiteItem[] = [];
+  
+  const sitesFile = getDataFilePath("sites.json");
+  const catsFile = getDataFilePath("categories.json");
+  
+  const allSites = await readJsonFile<SiteItem[]>(sitesFile, []);
+  const categories = await readJsonFile<CategoryItem[]>(catsFile, []);
+  
+  const category = categories.find((c) => c.slug === slug);
+  const sites = allSites.filter((s) => s.categories?.includes(slug));
 
-  if (supabase) {
-    // Buscar categoria
-    const { data: catData } = await supabase
-      .from('categories')
-      .select('slug, title')
-      .eq('slug', slug)
-      .single();
-    if (catData) category = catData;
-
-    // Buscar sites da categoria
-    const { data: sitesData } = await supabase
-      .from('sites')
-      .select('*');
-    if (sitesData) {
-      if (slug === 'todos') {
-        sites = sitesData;
-      } else {
-        sites = sitesData.filter((s) => (s.categories || []).includes(slug));
-      }
-      // Ordenar por nota do público (rating_avg) em ordem decrescente
-      sites = sites.sort((a, b) => (b.rating_avg || 0) - (a.rating_avg || 0));
-    }
-  } else {
-    // Fallback para arquivo local
-    const cats = await import("@/data/categories.json");
-    category = cats.default.find((c: Category) => c.slug === slug);
-    
-    const res = await fetch(`${getBaseUrl()}/api/sites`, { cache: "no-store" });
-    const allSites = (res.ok ? await res.json() : []) as SiteItem[];
-    if (slug === 'todos') {
-      sites = allSites;
-    } else {
-      sites = allSites.filter((s) => (s.categories || []).includes(slug));
-    }
-    // Ordenar por nota do público (rating_avg) em ordem decrescente
-    sites = sites.sort((a, b) => (b.rating_avg || 0) - (a.rating_avg || 0));
+  if (!category) {
+    notFound();
   }
 
   return (
@@ -110,7 +58,11 @@ export default async function CategoryPage({ params }: { params: Promise<Params>
                   href={`/${s.slug}`}
                   className="block rounded-lg overflow-hidden border border-neutral-200 bg-white shadow-sm hover:shadow"
                 >
-                  <Image src={s.cover} alt={s.name} width={640} height={360} className="h-40 w-full object-cover" />
+                  <CardImage 
+                    src={s.cover} 
+                    alt={s.name} 
+                    className="h-40 w-full" 
+                  />
                   <div className="p-3">
                     <div className="font-medium">{s.name}</div>
                     <p className="text-sm text-neutral-600 line-clamp-2">{s.short_desc}</p>

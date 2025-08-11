@@ -1,10 +1,18 @@
 "use client";
 import Link from "next/link";
 import { RatingBadge } from "./RatingBadge";
-import type { SiteItem } from "@/lib/site";
+import { CardImage, LogoImage } from "./OptimizedImage";
 
 type Props = {
-  item: SiteItem;
+  item: {
+    slug: string;
+    name: string;
+    cover: string;
+    logo: string;
+    short_desc: string;
+    rating_avg?: number;
+    rating_count?: number;
+  };
 };
 
 export function Card({ item }: Props) {
@@ -12,12 +20,10 @@ export function Card({ item }: Props) {
     <div className="min-w-[240px] max-w-[240px] snap-start">
       <div className="group relative rounded-lg overflow-hidden shadow-sm bg-white transition-transform duration-200 will-change-transform hover:scale-[1.02] hover:-translate-y-0.5 border border-neutral-200">
         <div className="relative h-36 w-full bg-neutral-200">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            alt={item.name}
+          <CardImage
             src={item.cover}
-            className="h-full w-full object-cover"
-            loading="lazy"
+            alt={item.name}
+            className="h-full w-full"
           />
           <div className="absolute top-2 left-2">
             <RatingBadge avg={item.rating_avg || 0} count={item.rating_count || 0} />
@@ -25,12 +31,10 @@ export function Card({ item }: Props) {
         </div>
         <div className="p-3 space-y-2">
           <div className="flex items-center gap-2">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <LogoImage
               src={item.logo}
-              alt="logo"
+              alt={`Logo ${item.name}`}
               className="h-6 w-6 rounded bg-white border"
-              loading="lazy"
             />
             <div className="font-medium truncate" title={item.name}>
               {item.name}
