@@ -52,7 +52,14 @@ export default function AdminCategoriasPage() {
     const existing = new Set(cats.map((c) => c.slug));
     let i = 2;
     while (existing.has(slug)) slug = `${base}-${i++}`;
-    const cat: Category = { slug, title: "Nova categoria" };
+    
+    // Definir a ordem como a próxima disponível
+    const maxOrder = Math.max(...cats.map(c => c.order || 0), 0);
+    const cat: Category = { 
+      slug, 
+      title: "Nova categoria",
+      order: maxOrder + 1
+    };
     setCats((prev) => [...prev, cat]);
     setSelectedSlug(slug);
   };
@@ -65,7 +72,18 @@ export default function AdminCategoriasPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(cat),
     });
-    if (!res.ok) alert("Erro ao salvar");
+    if (res.ok) {
+      // Recarregar a lista de categorias após salvar
+      try {
+        const list = await fetchJson<Category[]>("/api/categories");
+        setCats(list);
+        alert("Categoria salva com sucesso!");
+      } catch (e) {
+        console.error("Erro ao recarregar categorias:", e);
+      }
+    } else {
+      alert("Erro ao salvar");
+    }
   };
 
   const remove = async () => {

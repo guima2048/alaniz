@@ -55,8 +55,27 @@ export async function PUT(req: NextRequest) {
   const filePath = getDataFilePath("categories.json");
   const list = await readJsonFile<Category[]>(filePath, []);
   const idx = list.findIndex((c) => c.slug === body.slug);
-  if (idx === -1) list.push({ slug: String(body.slug), title: String(body.title) });
-  else list[idx] = { slug: String(body.slug), title: String(body.title) };
+  
+  // Se não tem order definido, usar a próxima ordem disponível
+  let order = body.order;
+  if (order === undefined) {
+    const maxOrder = Math.max(...list.map(c => c.order || 0), 0);
+    order = maxOrder + 1;
+  }
+  
+  if (idx === -1) {
+    list.push({ 
+      slug: String(body.slug), 
+      title: String(body.title),
+      order: order
+    });
+  } else {
+    list[idx] = { 
+      slug: String(body.slug), 
+      title: String(body.title),
+      order: order
+    };
+  }
   await writeJsonFile(filePath, list);
   return NextResponse.json({ ok: true });
 }
