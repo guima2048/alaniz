@@ -3,14 +3,14 @@ import type { Metadata } from "next";
 export const defaultMetadata: Metadata = {
   metadataBase: new URL(" https://example.com"),
   title: {
-    default: "ALANIZ.COM.BR",
-    template: "%s • ALANIZ.COM.BR",
+    default: "ALANIZ",
+    template: "%s • ALANIZ",
   },
   description:
     "Avaliações neutras e diretório estático de plataformas de relacionamento, com foco em privacidade e qualidade.",
   openGraph: {
     type: "website",
-    title: "ALANIZ.COM.BR",
+    title: "ALANIZ",
     description:
       "Avaliações neutras e diretório estático de plataformas de relacionamento.",
     images: [
@@ -18,7 +18,7 @@ export const defaultMetadata: Metadata = {
         url: "/opengraph-image.png",
         width: 1200,
         height: 630,
-        alt: "ALANIZ.COM.BR",
+        alt: "ALANIZ",
       },
     ],
   },
@@ -28,7 +28,7 @@ export const defaultMetadata: Metadata = {
 };
 
 export function siteTitle(t: string) {
-  return `${t} • ALANIZ.COM.BR`;
+  return `${t} • ALANIZ`;
 }
 
 
