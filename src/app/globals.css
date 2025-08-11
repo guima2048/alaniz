@@ -1,10 +1,13 @@
+/* Otimizações de performance CSS */
 @import "tailwindcss";
 
+/* Variáveis CSS otimizadas */
 :root {
   --background: #FAFAF7;
   --foreground: #171717;
 }
 
+/* Configuração do tema inline otimizada */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -12,7 +15,23 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/* Estilos base otimizados */
 body {
   background: var(--background);
   color: var(--foreground);
+  /* Otimizações de renderização */
+  text-rendering: optimizeSpeed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Otimizações de performance para elementos críticos */
+* {
+  box-sizing: border-box;
+}
+
+/* Prevenção de layout shift */
+img, video, canvas, audio, iframe, embed, object {
+  display: block;
+  max-width: 100%;
 }
