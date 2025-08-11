@@ -29,6 +29,18 @@ export function OptimizedImage({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
 
+  // Verificação de segurança para src
+  if (!src) {
+    return (
+      <div 
+        className={`${className} bg-gray-200 flex items-center justify-center`}
+        style={{ aspectRatio: `${width}/${height}` }}
+      >
+        <span className="text-gray-500 text-sm">Imagem não disponível</span>
+      </div>
+    );
+  }
+
   // Se a imagem é externa ou não suportada pelo next/image, usar img normal
   if (src.startsWith('http') || src.includes('data:') || !src.startsWith('/')) {
     return (
