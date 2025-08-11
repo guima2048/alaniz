@@ -31,8 +31,10 @@ export async function generateStaticParams() {
 
 export default async function EditorialPage({ params }: { params: Promise<Params> }) {
   const { slug } = await params;
+  
   const file = getDataFilePath("sites.json");
   const sites = await readJsonFile<SiteItem[]>(file, []);
+  
   const site = sites.find((s) => s.slug === slug);
 
   if (!site) {

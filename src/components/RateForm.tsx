@@ -30,10 +30,10 @@ export function RateForm({ slug }: Props) {
     setOk(null);
     setErr(null);
     try {
-      const res = await fetch(`/${encodeURIComponent(slug)}/rate`, {
+      const res = await fetch(`/api/ratings`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ score: stars * 2 }),
+        body: JSON.stringify({ slug, score: stars * 2 }),
       });
       if (!res.ok) throw new Error("Falha ao enviar");
       setOk("Obrigado pelo seu voto!");

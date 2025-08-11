@@ -76,3 +76,4 @@ try {
 } catch (error) {
   console.error('❌ Erro geral:', error.message);
 }
+

@@ -125,3 +125,4 @@ console.log(`   - ${sitesData.length} sites`);
 console.log(`   - ${categoriesData.length} categorias`);
 
 
+

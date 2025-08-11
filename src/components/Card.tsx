@@ -17,7 +17,11 @@ type Props = {
 
 export function Card({ item }: Props) {
   return (
-    <div className="min-w-[240px] max-w-[240px] snap-start">
+    <Link
+      href={`/${item.slug}`}
+      className="min-w-[240px] max-w-[240px] snap-start"
+      aria-label={`Abrir ${item.name}`}
+    >
       <div className="group relative rounded-lg overflow-hidden shadow-sm bg-white transition-transform duration-200 will-change-transform hover:scale-[1.02] hover:-translate-y-0.5 border border-neutral-200">
         <div className="relative h-36 w-full bg-neutral-200">
           <CardImage
@@ -43,15 +47,12 @@ export function Card({ item }: Props) {
           <p className="text-sm text-neutral-700 line-clamp-2 min-h-[40px]">
             {item.short_desc}
           </p>
-          <Link
-            href={`/${item.slug}`}
-            className="w-full inline-flex items-center justify-center rounded-md bg-neutral-900 text-white py-2 text-sm hover:bg-neutral-800"
-          >
+          <div className="w-full inline-flex items-center justify-center rounded-md bg-neutral-900 text-white py-2 text-sm hover:bg-neutral-800">
             Saber mais
-          </Link>
+          </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
 

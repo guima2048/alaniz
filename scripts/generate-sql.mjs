@@ -51,3 +51,4 @@ console.log('\n📝 Copie este SQL e execute no Supabase SQL Editor');
 console.log('🔗 Acesse: https://supabase.com/dashboard/project/ijzceqcwzrylhgmixaqq/sql');
 
 
+
