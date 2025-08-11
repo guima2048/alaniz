@@ -76,22 +76,41 @@ function HomePageContent() {
 
       {query && results.length > 0 && <Row title="Resultados" sites={results} />}
 
-      {!query && !categoria && categories.map((c) => {
-        const categorySites = c.slug === 'todos' 
-          ? sites 
-          : sites.filter((s) => (s.categories || []).includes(c.slug));
-        
-        // Ordenar sites da categoria por nota do público
-        const sortedSites = categorySites.sort((a, b) => (b.rating_avg || 0) - (a.rating_avg || 0));
-        
-        return (
-          <Row 
-            key={c.slug} 
-            title={c.title} 
-            sites={sortedSites} 
-          />
-        );
-      })}
+      {!query && !categoria && (
+        <>
+          {/* Mostrar "Todos os Sites" primeiro */}
+          {(() => {
+            const todosCategory = categories.find(c => c.slug === 'todos');
+            if (todosCategory) {
+              const todosSites = sites.sort((a, b) => (b.rating_avg || 0) - (a.rating_avg || 0));
+              return (
+                <Row 
+                  key="todos" 
+                  title={todosCategory.title} 
+                  sites={todosSites} 
+                />
+              );
+            }
+            return null;
+          })()}
+          
+          {/* Mostrar outras categorias */}
+          {categories
+            .filter(c => c.slug !== 'todos')
+            .map((c) => {
+              const categorySites = sites.filter((s) => (s.categories || []).includes(c.slug));
+              const sortedSites = categorySites.sort((a, b) => (b.rating_avg || 0) - (a.rating_avg || 0));
+              
+              return (
+                <Row 
+                  key={c.slug} 
+                  title={c.title} 
+                  sites={sortedSites} 
+                />
+              );
+            })}
+        </>
+      )}
 
       {!query && categoria && (
         <Row 
