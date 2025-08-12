@@ -95,8 +95,8 @@ export default function SiteEditorPage() {
   }, [selectedSlug, isAuthorized]);
 
   const updateSelected = (patch: Partial<SiteItem>) => {
-    // Se está mudando o slug, verificar se já existe
-    if (typeof patch.slug === "string" && patch.slug !== selectedSlug) {
+    // Se está mudando o slug, verificar se já existe (apenas se for diferente)
+    if (typeof patch.slug === "string" && patch.slug !== selectedSlug && patch.slug.trim() !== "") {
       const existingSlugs = new Set(sites.map(s => s.slug));
       if (existingSlugs.has(patch.slug)) {
         alert(`O slug "${patch.slug}" já existe. Escolha outro nome.`);
@@ -218,8 +218,11 @@ export default function SiteEditorPage() {
               </div>
               <div>
                 <label className="block text-sm mb-1">Slug</label>
-                <input className="w-full border rounded px-3 py-2" value={selected.slug}
+                <input 
+                  className="w-full border rounded px-3 py-2" 
+                  value={selected.slug}
                   onChange={(e) => {
+                    e.preventDefault();
                     const newSlug = e.target.value
                       .toLowerCase()
                       .trim()
@@ -227,7 +230,13 @@ export default function SiteEditorPage() {
                       .replace(/-+/g, '-')
                       .replace(/^-|-$/g, '');
                     updateSelected({ slug: newSlug });
-                  }} />
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                    }
+                  }}
+                />
                 <div className="text-xs text-gray-500 mt-1">
                   Apenas letras, números e hífens. Será convertido automaticamente.
                 </div>
