@@ -30,7 +30,6 @@ export async function DELETE(req: NextRequest) {
         try {
           // Deletar comentários em lotes para evitar erro de URI muito grande
           const batchSize = 50;
-          let deletedCount = 0;
 
           for (let i = 0; i < validUuids.length; i += batchSize) {
             const batch = validUuids.slice(i, i + batchSize);
