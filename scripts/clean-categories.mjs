@@ -77,3 +77,4 @@ try {
   console.error('❌ Erro geral:', error.message);
 }
 
+

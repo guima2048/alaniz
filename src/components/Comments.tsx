@@ -7,7 +7,7 @@ type CommentItem = {
   slug: string;
   name: string;
   message: string;
-  createdAt: string;
+  created_at: string;
   status?: 'pending' | 'approved' | 'rejected';
 };
 
@@ -101,7 +101,7 @@ export function Comments({ slug }: { slug: string }) {
           <li key={c.id} className="border rounded p-3 bg-white">
             <div className="text-sm text-neutral-600">
               <span className="font-medium">{c.name}</span>
-              <span> · {formatDateSP(c.createdAt)}</span>
+              <span> · {formatDateSP(c.created_at)}</span>
             </div>
             <p className="mt-1 whitespace-pre-wrap">{c.message}</p>
           </li>

@@ -8,7 +8,7 @@ type CommentItem = {
   slug: string;
   name: string;
   message: string;
-  createdAt: string; // ISO
+  created_at: string; // ISO
   status?: 'pending' | 'approved' | 'rejected';
 };
 
@@ -23,19 +23,19 @@ export async function GET(req: NextRequest) {
     try {
       const query = supabase
         .from("comments")
-        .select("id, slug, name, message, createdAt")
+        .select("id, slug, name, message, created_at")
         .eq("slug", slug);
       
-      const { data, error } = await query.order("createdAt", { ascending: false });
+      const { data, error } = await query.order("created_at", { ascending: false });
       if (error) {
         // Se der erro, pode ser que a coluna status não exista
         console.error("Supabase error:", error);
         // Fallback: tentar sem a coluna status
         const { data: fallbackData, error: fallbackError } = await supabase
           .from("comments")
-          .select("id, slug, name, message, createdAt")
+          .select("id, slug, name, message, created_at")
           .eq("slug", slug)
-          .order("createdAt", { ascending: false });
+          .order("created_at", { ascending: false });
         
         if (fallbackError) return NextResponse.json({ error: fallbackError.message }, { status: 500 });
         
@@ -68,14 +68,21 @@ export async function GET(req: NextRequest) {
   }
   const file = getDataFilePath("comments.json");
   const all = await readJsonFile<CommentItem[]>(file, []);
+  console.log(`📊 Total de comentários no arquivo: ${all.length}`);
+  console.log(`🔍 Procurando por slug: "${slug}"`);
+  
   let list = all.filter((c) => c.slug === slug);
+  console.log(`📝 Comentários encontrados para "${slug}": ${list.length}`);
   
   // Se não for admin, só mostrar comentários aprovados
   if (!admin) {
+    const beforeFilter = list.length;
     list = list.filter((c) => c.status === "approved");
+    console.log(`✅ Comentários aprovados: ${list.length} (filtrados de ${beforeFilter})`);
   }
   
-      list.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  list.sort((a, b) => b.created_at.localeCompare(a.created_at));
+  console.log(`🎯 Retornando ${list.length} comentários`);
   return NextResponse.json(list);
 }
 
@@ -94,7 +101,7 @@ export async function POST(req: NextRequest) {
       try {
         const { data, error } = await supabase
           .from("comments")
-          .insert({ slug, name, message, createdAt: now })
+          .insert({ slug, name, message, created_at: now })
           .select()
           .single();
         if (error) {
@@ -121,7 +128,7 @@ export async function POST(req: NextRequest) {
       slug,
       name,
       message,
-      createdAt: now,
+      created_at: now,
       status: "pending",
     };
     all.push(item);

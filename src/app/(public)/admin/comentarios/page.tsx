@@ -1,272 +1,340 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { formatDateSP } from "@/lib/date";
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
-type CommentItem = {
+interface Comment {
   id: string;
   slug: string;
   name: string;
   message: string;
-  createdAt: string;
-  status: 'pending' | 'approved' | 'rejected';
-};
+  created_at: string;
+  status?: 'pending' | 'approved' | 'rejected';
+}
 
-type SiteItem = {
-  slug: string;
-  name: string;
-};
+interface CommentsResponse {
+  comments: Comment[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
 
-export default function CommentsModerationPage() {
+export default function AdminComentarios() {
   const router = useRouter();
-  const [isAuthorized, setIsAuthorized] = useState(false);
-  const [comments, setComments] = useState<CommentItem[]>([]);
-  const [sites, setSites] = useState<SiteItem[]>([]);
+  const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('pending');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalComments, setTotalComments] = useState(0);
+  const [limit, setLimit] = useState(20);
+  const [selectedComments, setSelectedComments] = useState<Set<string>>(new Set());
+  const [deleting, setDeleting] = useState(false);
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const ok = window.localStorage.getItem("admin.session") === "true";
-    if (!ok) router.replace("/admin");
-    else setIsAuthorized(true);
-  }, [router]);
-
-  useEffect(() => {
-    if (!isAuthorized) return;
-    
-    async function loadData() {
-      try {
-        setLoading(true);
-        
-        // Buscar comentários (todos, incluindo pendentes)
-        const commentsRes = await fetch('/api/comments?admin=true', { cache: 'no-store' });
-        const allComments = commentsRes.ok ? await commentsRes.json() : [];
-        
-        // Buscar sites para mostrar nomes
-        const sitesRes = await fetch('/api/sites', { cache: 'no-store' });
-        const allSites = sitesRes.ok ? await sitesRes.json() : [];
-        
-        setComments(allComments);
-        setSites(allSites);
-      } catch (error) {
-        console.error('Erro ao carregar dados:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadData();
-  }, [isAuthorized]);
-
-  const filteredComments = comments.filter(c => {
-    if (filter === 'all') return true;
-    return c.status === filter;
-  });
-
-  const getSiteName = (slug: string) => {
-    const site = sites.find(s => s.slug === slug);
-    return site?.name || slug;
-  };
-
-  const handleModerate = async (id: string, status: 'approved' | 'rejected') => {
+  const fetchComments = async () => {
+    setLoading(true);
     try {
-      const res = await fetch('/api/comments', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, status })
-      });
-      
-      if (res.ok) {
-        setComments(prev => prev.map(c => 
-          c.id === id ? { ...c, status } : c
-        ));
+      const response = await fetch(`/api/admin/comments?page=${currentPage}&limit=${limit}&admin=true`);
+      if (response.ok) {
+        const data: CommentsResponse = await response.json();
+        setComments(data.comments);
+        setTotalPages(data.totalPages);
+        setTotalComments(data.total);
+      } else {
+        console.error('Erro ao carregar comentários');
       }
     } catch (error) {
-      console.error('Erro ao moderar comentário:', error);
+      console.error('Erro ao carregar comentários:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Tem certeza que deseja excluir este comentário?')) return;
-    
+  useEffect(() => {
+    fetchComments();
+  }, [currentPage, limit]);
+
+  const handleDeleteComment = async (id: string) => {
+    if (!confirm('Tem certeza que deseja deletar este comentário?')) return;
+
+    setDeleting(true);
     try {
-      const res = await fetch(`/api/comments?id=${id}`, {
-        method: 'DELETE'
+      const response = await fetch(`/api/admin/comments?id=${id}`, {
+        method: 'DELETE',
       });
-      
-      if (res.ok) {
-        setComments(prev => prev.filter(c => c.id !== id));
+
+      if (response.ok) {
+        setComments(comments.filter(comment => comment.id !== id));
+        setSelectedComments(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(id);
+          return newSet;
+        });
+      } else {
+        alert('Erro ao deletar comentário');
       }
     } catch (error) {
-      console.error('Erro ao excluir comentário:', error);
+      console.error('Erro ao deletar comentário:', error);
+      alert('Erro ao deletar comentário');
+    } finally {
+      setDeleting(false);
     }
   };
 
-  const getStatusBadge = (status: string) => {
-    const styles = {
-      pending: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-      approved: 'bg-green-100 text-green-800 border-green-200',
-      rejected: 'bg-red-100 text-red-800 border-red-200'
-    };
-    
-    const labels = {
-      pending: 'Pendente',
-      approved: 'Aprovado',
-      rejected: 'Rejeitado'
-    };
-    
+  const handleDeleteSelected = async () => {
+    if (selectedComments.size === 0) {
+      alert('Selecione pelo menos um comentário para deletar');
+      return;
+    }
+
+    if (!confirm(`Tem certeza que deseja deletar ${selectedComments.size} comentário(s)?`)) return;
+
+    setDeleting(true);
+    try {
+      const response = await fetch('/api/admin/comments/bulk-delete', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ids: Array.from(selectedComments),
+        }),
+      });
+
+      if (response.ok) {
+        setComments(comments.filter(comment => !selectedComments.has(comment.id)));
+        setSelectedComments(new Set());
+        fetchComments(); // Recarregar para atualizar paginação
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        console.error('Erro na API:', errorData);
+        alert(`Erro ao deletar comentários selecionados: ${errorData.error || response.statusText}`);
+      }
+    } catch (error) {
+      console.error('Erro ao deletar comentários:', error);
+      alert('Erro ao deletar comentários selecionados');
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const handleSelectAll = () => {
+    if (selectedComments.size === comments.length) {
+      setSelectedComments(new Set());
+    } else {
+      setSelectedComments(new Set(comments.map(c => c.id)));
+    }
+  };
+
+  const handleSelectComment = (id: string) => {
+    setSelectedComments(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(id)) {
+        newSet.delete(id);
+      } else {
+        newSet.add(id);
+      }
+      return newSet;
+    });
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleString('pt-BR');
+  };
+
+  const truncateText = (text: string, maxLength: number = 100) => {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + '...';
+  };
+
+  if (loading) {
     return (
-      <span className={`px-2 py-1 rounded-full text-xs border ${styles[status as keyof typeof styles]}`}>
-        {labels[status as keyof typeof labels]}
-      </span>
+      <div className="min-h-screen bg-gray-50 p-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Carregando comentários...</p>
+          </div>
+        </div>
+      </div>
     );
-  };
-
-  if (!isAuthorized) return null;
+  }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold text-neutral-900">Moderação de Comentários</h1>
-        <button 
-          onClick={() => router.push('/admin')}
-          className="px-4 py-2 text-sm rounded bg-neutral-600 text-white hover:bg-neutral-700 transition-colors"
-        >
-          Voltar ao Dashboard
-        </button>
-      </div>
-
-      {/* Filtros */}
-      <div className="mb-6">
-        <div className="flex gap-2">
-          <button
-            onClick={() => setFilter('all')}
-            className={`px-3 py-1 rounded text-sm border transition-colors ${
-              filter === 'all' 
-                ? 'bg-neutral-900 text-white border-neutral-900' 
-                : 'bg-white text-neutral-700 border-neutral-300 hover:border-neutral-400'
-            }`}
-          >
-            Todos ({comments.length})
-          </button>
-          <button
-            onClick={() => setFilter('pending')}
-            className={`px-3 py-1 rounded text-sm border transition-colors ${
-              filter === 'pending' 
-                ? 'bg-yellow-600 text-white border-yellow-600' 
-                : 'bg-white text-neutral-700 border-neutral-300 hover:border-neutral-400'
-            }`}
-          >
-            Pendentes ({comments.filter(c => c.status === 'pending').length})
-          </button>
-          <button
-            onClick={() => setFilter('approved')}
-            className={`px-3 py-1 rounded text-sm border transition-colors ${
-              filter === 'approved' 
-                ? 'bg-green-600 text-white border-green-600' 
-                : 'bg-white text-neutral-700 border-neutral-300 hover:border-neutral-400'
-            }`}
-          >
-            Aprovados ({comments.filter(c => c.status === 'approved').length})
-          </button>
-          <button
-            onClick={() => setFilter('rejected')}
-            className={`px-3 py-1 rounded text-sm border transition-colors ${
-              filter === 'rejected' 
-                ? 'bg-red-600 text-white border-red-600' 
-                : 'bg-white text-neutral-700 border-neutral-300 hover:border-neutral-400'
-            }`}
-          >
-            Rejeitados ({comments.filter(c => c.status === 'rejected').length})
-          </button>
-        </div>
-      </div>
-
-      {loading ? (
-        <div className="text-center py-8">
-          <p className="text-neutral-600">Carregando comentários...</p>
-        </div>
-      ) : filteredComments.length === 0 ? (
-        <div className="text-center py-8">
-          <p className="text-neutral-600">
-            {filter === 'pending' ? 'Nenhum comentário pendente.' :
-             filter === 'approved' ? 'Nenhum comentário aprovado.' :
-             filter === 'rejected' ? 'Nenhum comentário rejeitado.' :
-             'Nenhum comentário encontrado.'}
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {filteredComments.map((comment) => (
-            <div key={comment.id} className="bg-white border rounded-lg p-4 shadow-sm">
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="font-medium text-neutral-900">{comment.name}</span>
-                    <span className="text-sm text-neutral-500">•</span>
-                    <span className="text-sm text-neutral-500">{formatDateSP(comment.createdAt)}</span>
-                    <span className="text-sm text-neutral-500">•</span>
-                    <span className="text-sm text-neutral-600">
-                      Site: {getSiteName(comment.slug)}
-                    </span>
-                  </div>
-                  {getStatusBadge(comment.status)}
-                </div>
-              </div>
-              
-              <div className="mb-4">
-                <p className="text-neutral-800 whitespace-pre-wrap">{comment.message}</p>
-              </div>
-              
-              <div className="flex gap-2">
-                {comment.status === 'pending' && (
-                  <>
-                    <button
-                      onClick={() => handleModerate(comment.id, 'approved')}
-                      className="px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition-colors"
-                    >
-                      Aprovar
-                    </button>
-                    <button
-                      onClick={() => handleModerate(comment.id, 'rejected')}
-                      className="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors"
-                    >
-                      Rejeitar
-                    </button>
-                  </>
-                )}
-                
-                {comment.status === 'rejected' && (
-                  <button
-                    onClick={() => handleModerate(comment.id, 'approved')}
-                    className="px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition-colors"
-                  >
-                    Aprovar
-                  </button>
-                )}
-                
-                {comment.status === 'approved' && (
-                  <button
-                    onClick={() => handleModerate(comment.id, 'rejected')}
-                    className="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors"
-                  >
-                    Rejeitar
-                  </button>
-                )}
-                
+    <div className="min-h-screen bg-gray-50 p-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Gerenciar Comentários</h1>
+              <p className="text-gray-600 mt-1">
+                Total: {totalComments} comentários | Página {currentPage} de {totalPages}
+              </p>
+            </div>
+            <div className="flex items-center space-x-4">
+              <select
+                value={limit}
+                onChange={(e) => setLimit(Number(e.target.value))}
+                className="border border-gray-300 rounded-md px-3 py-2 text-sm"
+              >
+                <option value={10}>10 por página</option>
+                <option value={20}>20 por página</option>
+                <option value={50}>50 por página</option>
+                <option value={100}>100 por página</option>
+              </select>
+              {selectedComments.size > 0 && (
                 <button
-                  onClick={() => handleDelete(comment.id)}
-                  className="px-3 py-1 bg-neutral-600 text-white text-sm rounded hover:bg-neutral-700 transition-colors"
+                  onClick={handleDeleteSelected}
+                  disabled={deleting}
+                  className="bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-700 disabled:opacity-50"
                 >
-                  Excluir
+                  {deleting ? 'Deletando...' : `Deletar ${selectedComments.size} selecionado(s)`}
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Comments Table */}
+        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <input
+                      type="checkbox"
+                      checked={selectedComments.size === comments.length && comments.length > 0}
+                      onChange={handleSelectAll}
+                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Usuário
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Comentário
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Slug
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Data
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Ações
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {comments.map((comment) => (
+                  <tr key={comment.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <input
+                        type="checkbox"
+                        checked={selectedComments.has(comment.id)}
+                        onChange={() => handleSelectComment(comment.id)}
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900">{comment.name}</div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="text-sm text-gray-900 max-w-md">
+                        {truncateText(comment.message)}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">{comment.slug}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-500">{formatDate(comment.created_at)}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <button
+                        onClick={() => handleDeleteComment(comment.id)}
+                        disabled={deleting}
+                        className="text-red-600 hover:text-red-900 disabled:opacity-50"
+                      >
+                        Deletar
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+              <div className="flex-1 flex justify-between sm:hidden">
+                <button
+                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                  disabled={currentPage === 1}
+                  className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                >
+                  Anterior
+                </button>
+                <button
+                  onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                  disabled={currentPage === totalPages}
+                  className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                >
+                  Próxima
                 </button>
               </div>
+              <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-sm text-gray-700">
+                    Mostrando <span className="font-medium">{(currentPage - 1) * limit + 1}</span> a{' '}
+                    <span className="font-medium">
+                      {Math.min(currentPage * limit, totalComments)}
+                    </span>{' '}
+                    de <span className="font-medium">{totalComments}</span> resultados
+                  </p>
+                </div>
+                <div>
+                  <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                    <button
+                      onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                      disabled={currentPage === 1}
+                      className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                    >
+                      Anterior
+                    </button>
+                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                      const page = Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
+                      return (
+                        <button
+                          key={page}
+                          onClick={() => setCurrentPage(page)}
+                          className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
+                            page === currentPage
+                              ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
+                              : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                          }`}
+                        >
+                          {page}
+                        </button>
+                      );
+                    })}
+                    <button
+                      onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                      disabled={currentPage === totalPages}
+                      className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                    >
+                      Próxima
+                    </button>
+                  </nav>
+                </div>
+              </div>
             </div>
-          ))}
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }

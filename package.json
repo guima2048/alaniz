@@ -17,6 +17,11 @@
     "images:upload": "node --env-file=.env.local scripts/upload-images-to-supabase.mjs",
     "sync:categories": "node --env-file=.env.local scripts/sync-categories-from-xlsx.mjs",
     "seed:ratings": "node --env-file=.env.local scripts/seed-ratings-from-xlsx.mjs",
+    "import:comments": "node --env-file=.env.local scripts/import-comments-from-xlsx.mjs",
+    "comments:randomize": "node --env-file=.env.local scripts/randomize-comment-dates.mjs",
+    "comments:wipe": "node --env-file=.env.local scripts/wipe-comments.mjs",
+    "comments:weighted": "node --env-file=.env.local scripts/import-comments-weighted.mjs",
+    "comments:cleanup": "node --env-file=.env.local scripts/cleanup-comments.mjs",
     "lighthouse": "lighthouse http://localhost:3000 --output=json --output-path=./lighthouse-report.json --chrome-flags='--headless'",
     "core-web-vitals": "node scripts/check-core-web-vitals.mjs"
   },
