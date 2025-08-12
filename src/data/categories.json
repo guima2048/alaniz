@@ -1,7 +1,7 @@
 [
   {
-    "slug": "todos",
-    "title": "Todos os Sites",
+    "slug": "sites-de-elite",
+    "title": "Sites de Elite",
     "order": 1
   },
   {
@@ -16,22 +16,22 @@
   },
   {
     "slug": "cristao",
-    "title": "Comunidade Cristã",
+    "title": "Cristão",
     "order": 4
+  },
+  {
+    "slug": "famosos",
+    "title": "Famosos",
+    "order": 5
   },
   {
     "slug": "nicho",
     "title": "Nichos Especiais",
-    "order": 5
-  },
-  {
-    "slug": "famosos",
-    "title": "Sites Famosos",
     "order": 6
   },
   {
-    "slug": "sites-de-elite",
-    "title": "Sites de Elite",
+    "slug": "todos",
+    "title": "Todos os Sites",
     "order": 7
   }
 ]
