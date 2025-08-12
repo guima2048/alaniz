@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getDataFilePath, readJsonFile } from "@/lib/fsData";
+import { getDataFilePath, readJsonFile, writeJsonFile } from "@/lib/fsData";
 import { getSupabase } from "@/lib/supabase";
 
 type CommentItem = {
