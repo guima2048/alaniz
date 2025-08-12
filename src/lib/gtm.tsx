@@ -50,9 +50,12 @@ export function GA4Snippet() {
 }
 
 // Função para enviar eventos customizados para GA4
-export function sendGA4Event(eventName: string, parameters?: Record<string, any>) {
-  if (typeof window !== "undefined" && (window as any).gtag) {
-    (window as any).gtag('event', eventName, parameters);
+export function sendGA4Event(eventName: string, parameters?: Record<string, unknown>) {
+  if (typeof window !== "undefined") {
+    const gtag = (window as unknown as { gtag?: (command: string, eventName: string, parameters?: Record<string, unknown>) => void }).gtag;
+    if (gtag) {
+      gtag('event', eventName, parameters);
+    }
   }
 }
 

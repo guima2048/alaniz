@@ -69,4 +69,20 @@ export function StarSelector({ value, onChange }: StarSelectorProps) {
   );
 }
 
+// Componente Stars para o RateForm (value em 0..10)
+export function Stars({ score, onScoreChange }: { score: number; onScoreChange: (score: number) => void }) {
+  // Converter score de 0..10 para 1..5 para o StarSelector
+  const starValue = Math.ceil(score / 2);
+  
+  const handleStarChange = (starValue: number) => {
+    // Converter de volta para 0..10
+    const newScore = starValue * 2;
+    onScoreChange(newScore);
+  };
+
+  return (
+    <StarSelector value={starValue} onChange={handleStarChange} />
+  );
+}
+
 
