@@ -1,13 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96">
-  <rect width="96" height="96" rx="12" fill="#111"/>
-  <text x="50%" y="52%" dominant-baseline="middle" text-anchor="middle" fill="#fff" font-size="28" font-family="Arial, Helvetica, sans-serif">B</text>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <rect width="256" height="256" rx="32" fill="#7C3AED"/>
+  <text x="50%" y="50%" text-anchor="middle" dominant-baseline="central" font-family="Inter, Arial, sans-serif" font-size="96" font-weight="700" fill="#ffffff">BE</text>
 </svg>
-
-
-
-
-
-
-
-
-
