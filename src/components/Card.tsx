@@ -51,6 +51,9 @@ export function Card({ item }: Props) {
   const photoIndex = item.slug.length % richMenPhotos.length;
   const selectedPhoto = richMenPhotos[photoIndex];
   
+  // Título do site - apenas BeBaby mantém .app
+  const siteTitle = item.slug === "bebaby" ? `${item.name}.app` : item.name;
+  
   return (
     <div className="flex flex-col items-center">
       <Link
@@ -117,7 +120,7 @@ export function Card({ item }: Props) {
               {/* Conteúdo */}
               <div className="flex-1 min-w-0">
                 <h4 className="font-bold text-neutral-900 text-xs mb-1">
-                  {item.name}.app
+                  {siteTitle}
                 </h4>
                 <p className="text-neutral-700 text-xs line-clamp-2 leading-relaxed">
                   {item.short_desc}
