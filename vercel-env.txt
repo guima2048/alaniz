@@ -8,3 +8,4 @@ NEXT_PUBLIC_BASE_URL=https://alaniz.vercel.app
 
 
 
+

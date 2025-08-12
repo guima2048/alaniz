@@ -1,72 +1,70 @@
 "use client";
+import { useState } from "react";
+import { Stars } from "./Stars";
+import { sendGA4Event } from "@/lib/gtm";
 
-import { useEffect, useState, useCallback } from "react";
-import { StarRatingDisplay, StarSelector } from "./Stars";
-
-type Props = { slug: string };
-
-type RatingData = { score: number; count: number };
+interface Props {
+  slug: string;
+}
 
 export function RateForm({ slug }: Props) {
-  const [data, setData] = useState<RatingData>({ score: 0, count: 0 });
-  // seletor trabalha em 1..5; converteremos para 0..10 ao enviar
-  const [stars, setStars] = useState<number>(5);
-  const [sending, setSending] = useState(false);
-  const [ok, setOk] = useState<string | null>(null);
-  const [err, setErr] = useState<string | null>(null);
+  const [score, setScore] = useState(0);
+  const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const load = useCallback(async () => {
-    const res = await fetch(`/api/ratings?slug=${encodeURIComponent(slug)}`, { cache: "no-store" });
-    if (res.ok) setData(await res.json());
-  }, [slug]);
-
-  useEffect(() => {
-    void load();
-  }, [load]);
-
-  const submit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSending(true);
-    setOk(null);
-    setErr(null);
+    if (score === 0) return;
+
+    setLoading(true);
     try {
-      const res = await fetch(`/api/ratings`, {
+      const res = await fetch("/api/ratings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug, score: stars * 2 }),
+        body: JSON.stringify({ slug, score }),
       });
-      if (!res.ok) throw new Error("Falha ao enviar");
-      setOk("Obrigado pelo seu voto!");
-      await load();
-    } catch {
-      setErr("Não foi possível registrar seu voto.");
+
+      if (res.ok) {
+        setSubmitted(true);
+        
+        // Enviar evento para GA4
+        sendGA4Event('rating_submitted', {
+          site_slug: slug,
+          rating_score: score,
+          rating_count: 1
+        });
+      }
+    } catch (error) {
+      console.error("Erro ao enviar avaliação:", error);
     } finally {
-      setSending(false);
+      setLoading(false);
     }
   };
 
-  return (
-    <div className="flex flex-col gap-2 bg-white/60 rounded border border-neutral-200 p-3">
-      <div className="flex items-center gap-2 text-sm text-neutral-700">
-        <span className="font-medium">Nota dos usuários:</span>
-        <StarRatingDisplay value={Number(data.score || 0)} />
-        <span className="ml-1">({Number(data.score || 0).toFixed(2)} / 10)</span>
-        <span>· {data.count ?? 0} votos</span>
+  if (submitted) {
+    return (
+      <div className="text-sm text-neutral-600">
+        ✅ Obrigado pela sua avaliação!
       </div>
-      <form onSubmit={submit} className="flex items-center gap-3 text-sm">
-        <span>Sua avaliação:</span>
-        <StarSelector value={stars} onChange={setStars} />
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-2">
+      <div className="flex items-center gap-2">
+        <span className="text-sm text-neutral-600">Avalie:</span>
+        <Stars score={score} onScoreChange={setScore} />
+      </div>
+      {score > 0 && (
         <button
-          disabled={sending}
-          className="px-3 py-1 rounded bg-neutral-900 text-white disabled:opacity-60"
           type="submit"
+          disabled={loading}
+          className="text-xs bg-neutral-900 text-white px-3 py-1 rounded hover:bg-neutral-800 disabled:opacity-50"
         >
-          {sending ? "Enviando…" : "Avaliar"}
+          {loading ? "Enviando..." : "Enviar"}
         </button>
-        {ok && <span className="text-emerald-700">{ok}</span>}
-        {err && <span className="text-red-600">{err}</span>}
-      </form>
-    </div>
+      )}
+    </form>
   );
 }
 

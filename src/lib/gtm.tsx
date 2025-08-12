@@ -25,6 +25,37 @@ export function GTMSnippet() {
   );
 }
 
+export function GA4Snippet() {
+  if (!ga4.enabled || !ga4.id) return null;
+  return (
+    <>
+      <Script
+        src={`https://www.googletagmanager.com/gtag/js?id=${ga4.id}`}
+        strategy="afterInteractive"
+      />
+      <Script
+        id="ga4-script"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${ga4.id}');
+          `,
+        }}
+      />
+    </>
+  );
+}
+
+// Função para enviar eventos customizados para GA4
+export function sendGA4Event(eventName: string, parameters?: Record<string, any>) {
+  if (typeof window !== "undefined" && (window as any).gtag) {
+    (window as any).gtag('event', eventName, parameters);
+  }
+}
+
 export function GTMNoScript() {
   if (!GTM_ID) return null;
   return (

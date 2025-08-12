@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { GTMNoScript, GTMSnippet } from "@/lib/gtm";
+import { GTMNoScript, GTMSnippet, GA4Snippet } from "@/lib/gtm";
 import { ConsentBanner } from "@/components/ConsentBanner";
 import { defaultMetadata } from "@/lib/seo";
 
@@ -20,8 +20,9 @@ export default function RootLayout({
         <link rel="shortcut icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/favicon.ico" />
         
-        {/* GTM otimizado */}
+        {/* GTM e GA4 otimizados */}
         <GTMSnippet />
+        <GA4Snippet />
       </head>
       <body className="bg-[#FAFAF7] text-neutral-900 antialiased">
         {/* Script de limpeza de cache movido para o final e otimizado */}
