@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, useCallback } from 'react';
 
 interface Comment {
   id: string;
@@ -21,7 +20,6 @@ interface CommentsResponse {
 }
 
 export default function AdminComentarios() {
-  const router = useRouter();
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -31,7 +29,7 @@ export default function AdminComentarios() {
   const [selectedComments, setSelectedComments] = useState<Set<string>>(new Set());
   const [deleting, setDeleting] = useState(false);
 
-  const fetchComments = async () => {
+  const fetchComments = useCallback(async () => {
     setLoading(true);
     try {
       const response = await fetch(`/api/admin/comments?page=${currentPage}&limit=${limit}&admin=true`);
@@ -48,11 +46,11 @@ export default function AdminComentarios() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, limit]);
 
   useEffect(() => {
     fetchComments();
-  }, [currentPage, limit]);
+  }, [currentPage, limit, fetchComments]);
 
   const handleDeleteComment = async (id: string) => {
     if (!confirm('Tem certeza que deseja deletar este comentário?')) return;

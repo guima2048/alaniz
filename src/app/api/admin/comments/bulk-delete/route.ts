@@ -2,6 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { getDataFilePath, readJsonFile, writeJsonFile } from "@/lib/fsData";
 import { getSupabase } from "@/lib/supabase";
 
+type CommentItem = {
+  id: string;
+  slug: string;
+  name: string;
+  message: string;
+  created_at: string;
+  status?: 'pending' | 'approved' | 'rejected';
+};
+
 export async function DELETE(req: NextRequest) {
   try {
     const body = await req.json();
@@ -35,8 +44,6 @@ export async function DELETE(req: NextRequest) {
               console.error("Erro ao deletar lote no Supabase:", error);
               break;
             }
-
-            deletedCount += batch.length;
           }
         } catch (e) {
           console.error("Erro no Supabase:", e);
@@ -46,7 +53,7 @@ export async function DELETE(req: NextRequest) {
 
     // Fallback para arquivo local
     const file = getDataFilePath("comments.json");
-    const all = await readJsonFile<any[]>(file, []);
+    const all = await readJsonFile<CommentItem[]>(file, []);
     const filtered = all.filter((c) => !ids.includes(c.id));
     
     await writeJsonFile(file, filtered);
