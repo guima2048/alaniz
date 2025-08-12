@@ -23,6 +23,13 @@ type SiteItem = {
 };
 
 export async function GET() {
+  // Forçar uso do arquivo local por enquanto
+  const filePath = getDataFilePath("sites.json");
+  const data = await readJsonFile<SiteItem[]>(filePath, []);
+  return NextResponse.json(data);
+  
+  // Código do Supabase comentado temporariamente
+  /*
   const supabase = getSupabase();
   if (supabase) {
     try {
@@ -42,6 +49,7 @@ export async function GET() {
   const filePath = getDataFilePath("sites.json");
   const data = await readJsonFile<SiteItem[]>(filePath, []);
   return NextResponse.json(data);
+  */
 }
 
 export async function PUT(req: NextRequest) {
