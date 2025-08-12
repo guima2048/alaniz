@@ -9,9 +9,9 @@ type Props = {
     name: string;
     cover: string;
     logo: string;
-    short_desc: string;
-    rating_avg?: number;
-    rating_count?: number;
+    short_desc: string | null;
+    rating_avg?: number | null;
+    rating_count?: number | null;
   };
 };
 
@@ -45,7 +45,7 @@ export function Card({ item }: Props) {
             </div>
           </div>
           <p className="text-sm text-neutral-700 line-clamp-2 min-h-[40px]">
-            {item.short_desc}
+            {item.short_desc || "Descrição não disponível"}
           </p>
           <div className="w-full inline-flex items-center justify-center rounded-md bg-neutral-900 text-white py-2 text-sm hover:bg-neutral-800">
             Saber mais
