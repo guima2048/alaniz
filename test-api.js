@@ -1,4 +1,4 @@
-const fetch = require('node-fetch');
+// Usar fetch nativo do Node.js
 
 async function testAPI() {
   try {

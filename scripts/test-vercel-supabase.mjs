@@ -1,9 +1,13 @@
+#!/usr/bin/env node
 import { createClient } from '@supabase/supabase-js';
 
+// Usar as mesmas variáveis de ambiente do Vercel
 const url = 'https://ijzceqcwzrylhgmixaqq.supabase.co';
 const anon = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlqemNlcWN3enJ5bGhnbWl4YXFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ4NTc3NzEsImV4cCI6MjA3MDQzMzc3MX0.RRatZdAClrlAdoZt-s3fxWs8IOIksvOobUmvwlNZHvA';
 
-console.log('🔍 Testando FASE 1 - Sites e Categories...');
+console.log('🔍 Testando conexão com Supabase (configuração Vercel)...');
+console.log('URL:', url);
+console.log('Anon Key:', anon.substring(0, 20) + '...');
 
 try {
   const supabase = createClient(url, anon, {
@@ -47,20 +51,13 @@ try {
   // Teste 3: Testar inserção de site
   console.log('\n✍️ Testando inserção de site...');
   const testSite = {
-    slug: 'test-site-phase1',
-    name: 'Site de Teste Fase 1',
-    url: 'https://teste.com',
-    short_desc: 'Site para testar a integração',
-    categories: ['sugar'],
-    price_min: 99.9,
-    price_model: 'mensal',
-    style: 'teste',
-    audience: 'teste',
-    privacy_level: 'alto',
-    editorial_score: 8.5,
+    slug: 'test-vercel-connection',
+    name: 'Site de Teste Vercel',
+    url: 'https://teste-vercel.com',
+    short_desc: 'Site para testar a conexão Vercel-Supabase',
+    categories: ['todos'],
     rating_avg: 8.0,
-    rating_count: 10,
-    features: ['teste1', 'teste2']
+    rating_count: 5
   };
 
   const { data: insertSiteData, error: insertSiteError } = await supabase
@@ -72,42 +69,24 @@ try {
   if (insertSiteError) {
     console.log('❌ Erro ao inserir site:', insertSiteError.message);
   } else {
-    console.log('✅ Inserção de site OK');
-    console.log('📝 ID do site:', insertSiteData.slug);
+    console.log('✅ Site inserido com sucesso:', insertSiteData.name);
+    
+    // Limpar o site de teste
+    const { error: deleteError } = await supabase
+      .from('sites')
+      .delete()
+      .eq('slug', 'test-vercel-connection');
+    
+    if (deleteError) {
+      console.log('⚠️ Erro ao limpar site de teste:', deleteError.message);
+    } else {
+      console.log('✅ Site de teste removido');
+    }
   }
 
-  // Teste 4: Testar inserção de categoria
-  console.log('\n📝 Testando inserção de categoria...');
-  const testCategory = {
-    slug: 'test-cat-phase1',
-    title: 'Categoria de Teste Fase 1'
-  };
-
-  const { data: insertCatData, error: insertCatError } = await supabase
-    .from('categories')
-    .upsert(testCategory, { onConflict: 'slug' })
-    .select()
-    .single();
-
-  if (insertCatError) {
-    console.log('❌ Erro ao inserir categoria:', insertCatError.message);
-  } else {
-    console.log('✅ Inserção de categoria OK');
-    console.log('📝 ID da categoria:', insertCatData.slug);
-  }
-
-  console.log('\n🎉 Teste da FASE 1 concluído!');
-  console.log('\n🚀 Agora você pode:');
-  console.log('   - Acessar http://localhost:3000/admin');
-  console.log('   - Testar admin de sites e categorias');
-  console.log('   - Verificar se os dados aparecem no Supabase');
+  console.log('\n🎉 Teste concluído!');
 
 } catch (error) {
   console.error('❌ Erro geral:', error.message);
+  process.exit(1);
 }
-
-
-
-
-
-

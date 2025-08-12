@@ -54,3 +54,4 @@ console.log('🔗 Acesse: https://supabase.com/dashboard/project/ijzceqcwzrylhgm
 
 
 
+

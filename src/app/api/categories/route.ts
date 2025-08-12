@@ -4,21 +4,29 @@ import { getSupabase } from "@/lib/supabase";
 type Category = { slug: string; title: string; order?: number };
 
 export async function GET() {
+  // Tentar buscar dados do Supabase primeiro
   const supabase = getSupabase();
   if (supabase) {
     try {
       const { data, error } = await supabase
         .from("categories")
         .select("*")
-        .order("order", { ascending: true });
-      if (error) throw error;
-      return NextResponse.json(data || []);
+        .order("order", { ascending: true })
+        .order("title");
+      
+      if (!error && data && Array.isArray(data)) {
+        console.log(`✅ Buscadas ${data.length} categorias do Supabase`);
+        return NextResponse.json(data);
+      } else {
+        console.error("Erro ao buscar categorias do Supabase:", error);
+      }
     } catch (e) {
-      console.error("Supabase error:", e);
+      console.error("Exceção ao buscar categorias do Supabase:", e);
     }
   }
-  
-  // Dados estáticos como fallback
+
+  // Fallback para dados estáticos se Supabase não estiver disponível
+  console.log("⚠️ Usando dados estáticos como fallback");
   const staticData: Category[] = [
     { slug: "todos", title: "Todos", order: 1 },
     { slug: "famosos", title: "Famosos", order: 2 },

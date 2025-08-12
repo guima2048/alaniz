@@ -22,21 +22,28 @@ type SiteItem = {
 };
 
 export async function GET() {
+  // Tentar buscar dados do Supabase primeiro
   const supabase = getSupabase();
   if (supabase) {
     try {
       const { data, error } = await supabase
         .from("sites")
         .select("*")
-        .order("rating_avg", { ascending: false });
-      if (error) throw error;
-      return NextResponse.json(data || []);
+        .order("name");
+      
+      if (!error && data && Array.isArray(data)) {
+        console.log(`✅ Buscados ${data.length} sites do Supabase`);
+        return NextResponse.json(data);
+      } else {
+        console.error("Erro ao buscar sites do Supabase:", error);
+      }
     } catch (e) {
-      console.error("Supabase error:", e);
+      console.error("Exceção ao buscar sites do Supabase:", e);
     }
   }
-  
-  // Dados estáticos como fallback
+
+  // Fallback para dados estáticos se Supabase não estiver disponível
+  console.log("⚠️ Usando dados estáticos como fallback");
   const staticData: SiteItem[] = [
     {
       "slug": "bebaby",
@@ -71,6 +78,28 @@ export async function GET() {
       "categories": ["todos", "Famosos"],
       "rating_avg": 8.8,
       "rating_count": 8000
+    },
+    {
+      "slug": "badoo",
+      "name": "Badoo",
+      "url": "https://badoo.com",
+      "logo": "https://ijzceqcwzrylhgmixaqq.supabase.co/storage/v1/object/public/media/logos/badoo.svg",
+      "cover": "https://ijzceqcwzrylhgmixaqq.supabase.co/storage/v1/object/public/media/covers/badoo.svg",
+      "short_desc": "O Badoo é uma plataforma global para encontros e relacionamentos.",
+      "categories": ["todos", "Famosos"],
+      "rating_avg": 8.3,
+      "rating_count": 12000
+    },
+    {
+      "slug": "okcupid",
+      "name": "OkCupid",
+      "url": "https://okcupid.com",
+      "logo": "https://ijzceqcwzrylhgmixaqq.supabase.co/storage/v1/object/public/media/logos/okcupid.svg",
+      "cover": "https://ijzceqcwzrylhgmixaqq.supabase.co/storage/v1/object/public/media/covers/okcupid.svg",
+      "short_desc": "OkCupid usa algoritmos para encontrar compatibilidade entre usuários.",
+      "categories": ["todos", "Famosos"],
+      "rating_avg": 8.1,
+      "rating_count": 7000
     }
   ];
   
