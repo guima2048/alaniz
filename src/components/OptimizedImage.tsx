@@ -3,80 +3,40 @@
 import Image from 'next/image';
 import { useState } from 'react';
 
-interface OptimizedImageProps {
+type Props = {
   src: string;
   alt: string;
   width?: number;
   height?: number;
   className?: string;
-  priority?: boolean;
-  loading?: 'lazy' | 'eager';
-  placeholder?: 'blur' | 'empty';
-  sizes?: string;
-}
+};
 
-export function OptimizedImage({
-  src,
-  alt,
-  width = 640,
-  height = 360,
-  className = '',
-  priority = false,
-  loading = 'lazy',
-  placeholder = 'empty',
-  sizes = '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
-}: OptimizedImageProps) {
-  const [isLoading, setIsLoading] = useState(true);
+export function OptimizedImage({ src, alt, width = 240, height = 144, className = "" }: Props) {
   const [error, setError] = useState(false);
 
-  // Verificação de segurança para src
+  // Se não há src, mostrar placeholder
   if (!src) {
     return (
       <div 
-        className={`${className} bg-gray-200 flex items-center justify-center`}
-        style={{ 
-          aspectRatio: `${width}/${height}`,
-          width: '100%',
-          height: 'auto'
-        }}
+        className={`${className} bg-gray-200 flex items-center justify-center text-gray-500 text-sm`}
+        style={{ aspectRatio: `${width}/${height}`, width: '100%', height: 'auto' }}
       >
-        <span className="text-gray-500 text-sm">Imagem não disponível</span>
+        Sem imagem
       </div>
     );
   }
 
-  // Se a imagem é externa ou não suportada pelo next/image, usar img normal
-  if (src.startsWith('http') || src.includes('data:') || !src.startsWith('/')) {
+  // Para imagens externas ou data URLs, usar img tag
+  if (src.startsWith('http') || src.startsWith('data:')) {
     return (
-      <div 
-        className={`${className} relative`}
-        style={{ 
-          aspectRatio: `${width}/${height}`,
-          width: '100%',
-          height: 'auto'
-        }}
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
+      <div className={`${className} relative`} style={{ aspectRatio: `${width}/${height}`, width: '100%', height: 'auto' }}>
         <img
           src={src}
           alt={alt}
-          width={width}
-          height={height}
-          className={`w-full h-full object-cover ${isLoading ? 'animate-pulse bg-gray-200' : ''}`}
-          loading={loading}
-          onLoad={() => setIsLoading(false)}
-          onError={() => {
-            setError(true);
-            setIsLoading(false);
-          }}
-          style={{
-            aspectRatio: `${width}/${height}`,
-            objectFit: 'cover'
-          }}
+          className="w-full h-full object-cover"
+          onError={() => setError(true)}
+          loading="lazy"
         />
-        {isLoading && (
-          <div className="absolute inset-0 bg-gray-200 animate-pulse" />
-        )}
         {error && (
           <div className="absolute inset-0 bg-gray-100 flex items-center justify-center text-gray-500 text-sm">
             Erro ao carregar imagem
@@ -86,39 +46,18 @@ export function OptimizedImage({
     );
   }
 
+  // Para imagens locais, usar next/image
   return (
-    <div 
-      className={`relative ${className}`} 
-      style={{ 
-        aspectRatio: `${width}/${height}`,
-        width: '100%',
-        height: 'auto'
-      }}
-    >
+    <div className={`relative ${className}`} style={{ aspectRatio: `${width}/${height}`, width: '100%', height: 'auto' }}>
       <Image
         src={src}
         alt={alt}
         width={width}
         height={height}
-        priority={priority}
-        loading={loading}
-        placeholder={placeholder}
-        sizes={sizes}
-        className={`transition-opacity duration-300 w-full h-full object-cover ${isLoading ? 'opacity-0' : 'opacity-100'}`}
-        onLoad={() => setIsLoading(false)}
-        onError={() => {
-          setError(true);
-          setIsLoading(false);
-        }}
-        style={{
-          objectFit: 'cover',
-          width: '100%',
-          height: '100%'
-        }}
+        className="w-full h-full object-cover"
+        onError={() => setError(true)}
+        priority={false}
       />
-      {isLoading && (
-        <div className="absolute inset-0 bg-gray-200 animate-pulse" />
-      )}
       {error && (
         <div className="absolute inset-0 bg-gray-100 flex items-center justify-center text-gray-500 text-sm">
           Erro ao carregar imagem
@@ -129,49 +68,16 @@ export function OptimizedImage({
 }
 
 // Componente específico para imagens hero (LCP)
-export function HeroImage({ src, alt, className = '' }: { src: string; alt: string; className?: string }) {
-  return (
-    <OptimizedImage
-      src={src}
-      alt={alt}
-      width={1200}
-      height={630}
-      className={className}
-      priority={true}
-      loading="eager"
-      sizes="100vw"
-    />
-  );
+export function HeroImage({ src, alt, className = "" }: { src: string; alt: string; className?: string }) {
+  return <OptimizedImage src={src} alt={alt} width={1200} height={630} className={className} />;
 }
 
-// Componente para imagens de card
-export function CardImage({ src, alt, className = '' }: { src: string; alt: string; className?: string }) {
-  return (
-    <OptimizedImage
-      src={src}
-      alt={alt}
-      width={240}
-      height={144}
-      className={className}
-      priority={false}
-      loading="lazy"
-      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-    />
-  );
+// Componente específico para imagens de card
+export function CardImage({ src, alt, className = "" }: { src: string; alt: string; className?: string }) {
+  return <OptimizedImage src={src} alt={alt} width={240} height={144} className={className} />;
 }
 
-// Componente para logos
-export function LogoImage({ src, alt, className = '' }: { src: string; alt: string; className?: string }) {
-  return (
-    <OptimizedImage
-      src={src}
-      alt={alt}
-      width={24}
-      height={24}
-      className={className}
-      priority={false}
-      loading="lazy"
-      sizes="24px"
-    />
-  );
+// Componente específico para logos
+export function LogoImage({ src, alt, className = "" }: { src: string; alt: string; className?: string }) {
+  return <OptimizedImage src={src} alt={alt} width={24} height={24} className={className} />;
 }

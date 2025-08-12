@@ -15,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <head>
-        {/* CSS Crítico para prevenir CLS */}
+        {/* CSS Crítico Inline - Apenas para prevenir CLS */}
         <style
           dangerouslySetInnerHTML={{
             __html: `
@@ -57,13 +57,6 @@ export default function RootLayout({
                 display: flex;
                 align-items: center;
                 justify-content: center;
-              }
-              
-              /* Prevenção de layout shift para imagens */
-              img {
-                max-width: 100%;
-                height: auto;
-                display: block;
               }
               
               /* Garantir que elementos tenham dimensões consistentes */

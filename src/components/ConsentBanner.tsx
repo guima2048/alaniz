@@ -1,53 +1,44 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import Link from "next/link";
 
-const KEY = "consent.accepted.v1";
+const KEY = "cookie-consent";
 
 export function ConsentBanner() {
   const [visible, setVisible] = useState(false);
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
     const accepted = localStorage.getItem(KEY);
     if (!accepted) setVisible(true);
   }, []);
 
-  // Não renderizar nada até o componente estar montado para evitar hidratação
-  if (!mounted) {
-    return (
-      <div className="fixed inset-x-0 bottom-0 z-40" style={{ height: '0px', overflow: 'hidden' }}>
-        <div className="mx-auto max-w-3xl m-4 rounded-lg border border-neutral-200 bg-white shadow-lg p-4 flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between consent-banner">
-          <p className="text-sm text-neutral-700">
-            Utilizamos cookies funcionais para melhorar sua experiência. Ao continuar,
-            você concorda com nossa política de cookies.
-          </p>
-          <button className="rounded-md bg-neutral-900 text-white text-sm px-3 py-2 hover:bg-neutral-800">
-            Aceitar
-          </button>
-        </div>
-      </div>
-    );
-  }
+  const accept = () => {
+    localStorage.setItem(KEY, "true");
+    setVisible(false);
+  };
 
   if (!visible) return null;
-  
+
   return (
     <div className="fixed inset-x-0 bottom-0 z-40">
       <div className="mx-auto max-w-3xl m-4 rounded-lg border border-neutral-200 bg-white shadow-lg p-4 flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between consent-banner">
-        <p className="text-sm text-neutral-700">
-          Utilizamos cookies funcionais para melhorar sua experiência. Ao continuar,
-          você concorda com nossa política de cookies.
-        </p>
-        <button
-          className="rounded-md bg-neutral-900 text-white text-sm px-3 py-2 hover:bg-neutral-800"
-          onClick={() => {
-            localStorage.setItem(KEY, "1");
-            setVisible(false);
-          }}
-        >
-          Aceitar
-        </button>
+        <div className="flex-1">
+          <p className="text-sm text-neutral-700">
+            Usamos cookies para melhorar sua experiência. Ao continuar navegando, você concorda com nossa{" "}
+            <Link href="/legais/privacidade" className="text-neutral-900 underline hover:no-underline">
+              política de privacidade
+            </Link>
+            .
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <button
+            onClick={accept}
+            className="px-4 py-2 bg-neutral-900 text-white text-sm rounded-md hover:bg-neutral-800 transition-colors"
+          >
+            Aceitar
+          </button>
+        </div>
       </div>
     </div>
   );

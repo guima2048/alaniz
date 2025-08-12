@@ -35,3 +35,27 @@ img, video, canvas, audio, iframe, embed, object {
   display: block;
   max-width: 100%;
 }
+
+/* Esconder scrollbars para melhor UX */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Otimizações de performance */
+.will-change-transform {
+  will-change: transform;
+}
+
+/* Reduzir motion para usuários que preferem */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

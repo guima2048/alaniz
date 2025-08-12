@@ -2,17 +2,10 @@
 import Link from "next/link";
 import { RatingBadge } from "./RatingBadge";
 import { CardImage } from "./OptimizedImage";
+import type { SiteItem } from "@/lib/site";
 
 type Props = {
-  item: {
-    slug: string;
-    name: string;
-    cover: string;
-    logo: string;
-    short_desc: string | null;
-    rating_avg?: number | null;
-    rating_count?: number | null;
-  };
+  item: SiteItem;
 };
 
 export function Card({ item }: Props) {
@@ -22,6 +15,7 @@ export function Card({ item }: Props) {
         href={`/${item.slug}`}
         className="card-container snap-start"
         aria-label={`Abrir ${item.name}`}
+        prefetch={false}
       >
         <div className="group relative rounded-lg overflow-hidden shadow-sm bg-white transition-transform duration-200 will-change-transform hover:scale-[1.02] hover:-translate-y-0.5 border border-neutral-200">
           <div className="card-image-container bg-neutral-200">

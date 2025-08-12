@@ -1,9 +1,9 @@
 import { CategoryChips } from "@/components/CategoryChips";
-import { SearchInput } from "@/components/SearchInput";
 import { HomeContent } from "@/components/HomeContent";
+import { SearchInput } from "@/components/SearchInput";
 import { getSites, getCategories } from "@/lib/data";
 
-export default async function HomePage() {
+export default async function SitePage() {
   // Buscar dados no servidor para SSR
   const [sites, categories] = await Promise.all([
     getSites(),
