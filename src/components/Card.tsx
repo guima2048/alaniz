@@ -9,13 +9,17 @@ type Props = {
 };
 
 export function Card({ item }: Props) {
+  // Se for Bebaby, vai para o site real
+  const href = item.slug === "bebaby" ? "https://www.bebaby.app" : "/site";
+  
   return (
     <div className="flex flex-col items-center">
       <Link
-        href={`/${item.slug}`}
+        href={href}
         className="card-container snap-start"
         aria-label={`Abrir ${item.name}`}
         prefetch={false}
+        target={item.slug === "bebaby" ? "_blank" : "_self"}
       >
         <div className="group relative rounded-lg overflow-hidden shadow-sm bg-white transition-transform duration-200 will-change-transform hover:scale-[1.02] hover:-translate-y-0.5 border border-neutral-200">
           <div className="card-image-container bg-neutral-200">

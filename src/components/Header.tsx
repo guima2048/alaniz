@@ -1,140 +1,118 @@
 "use client";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
+
+function getCurrentYearSP() {
+  return new Date().getFullYear();
+}
 
 export function Header() {
-  const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  
-  const isActive = (href: string) =>
-    pathname === href || pathname?.startsWith(`${href}/`);
+  const pathname = usePathname();
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-
-  const closeMenu = () => {
-    setIsMenuOpen(false);
-  };
+  const isActive = (path: string) => pathname === path;
 
   return (
-    <header className="sticky top-0 z-30 backdrop-blur bg-white/85 border-b border-neutral-200 supports-[backdrop-filter]:bg-white/70">
-      <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-        <Link href="/" className="font-semibold tracking-tight text-lg">
-          ALANIZ
-        </Link>
-        
-        {/* Menu desktop */}
-        <nav className="hidden md:flex items-center gap-4 text-sm">
-          <Link
-            href="/"
-            className={isActive("/") ? "font-medium" : "opacity-80 hover:opacity-100"}
-          >
-            Home
+    <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <Link href="/site" className="text-xl font-bold text-neutral-900">
+            ALANIZ
           </Link>
-          <Link
-            href="/categorias"
-            className={isActive("/categorias") ? "font-medium" : "opacity-80 hover:opacity-100"}
-          >
-            Categorias
-          </Link>
-          <Link 
-            href="/blog" 
-            className={isActive("/blog") ? "font-medium" : "opacity-80 hover:opacity-100"}
-          >
-            Blog
-          </Link>
-          <Link 
-            href="/sobre" 
-            className={isActive("/sobre") ? "font-medium" : "opacity-80 hover:opacity-100"}
-          >
-            Sobre
-          </Link>
-          <Link 
-            href="/contato" 
-            className={isActive("/contato") ? "font-medium" : "opacity-80 hover:opacity-100"}
-          >
-            Contato
-          </Link>
-        </nav>
 
-        {/* Botão hambúrguer */}
-        <button
-          onClick={toggleMenu}
-          className="md:hidden p-2 rounded-md hover:bg-gray-100 transition-colors"
-          aria-label="Abrir menu"
-        >
-          <div className="w-5 h-5 flex flex-col justify-center items-center">
-            <span className={`block w-4 h-0.5 bg-gray-600 transition-all duration-300 ${isMenuOpen ? 'rotate-45 translate-y-1' : ''}`}></span>
-            <span className={`block w-4 h-0.5 bg-gray-600 transition-all duration-300 mt-1 ${isMenuOpen ? 'opacity-0' : ''}`}></span>
-            <span className={`block w-4 h-0.5 bg-gray-600 transition-all duration-300 mt-1 ${isMenuOpen ? '-rotate-45 -translate-y-1' : ''}`}></span>
-          </div>
-        </button>
-      </div>
-
-      {/* Menu mobile */}
-      {isMenuOpen && (
-        <div className="md:hidden border-t border-gray-200 bg-white">
-          <nav className="container mx-auto px-4 py-2 flex flex-col space-y-1">
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-8">
             <Link
-              href="/"
-              onClick={closeMenu}
-              className={`px-3 py-2 rounded-md text-sm transition-colors ${
-                isActive("/") 
-                  ? "bg-gray-100 font-medium text-gray-900" 
-                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-              }`}
+              href="/site"
+              className={isActive("/") ? "font-medium" : "opacity-80 hover:opacity-100"}
             >
-              Home
+              Sites
             </Link>
             <Link
-              href="/categorias"
-              onClick={closeMenu}
-              className={`px-3 py-2 rounded-md text-sm transition-colors ${
-                isActive("/categorias") 
-                  ? "bg-gray-100 font-medium text-gray-900" 
-                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-              }`}
+              href="/site"
+              className={isActive("/categorias") ? "font-medium" : "opacity-80 hover:opacity-100"}
             >
               Categorias
             </Link>
             <Link
-              href="/blog"
-              onClick={closeMenu}
-              className={`px-3 py-2 rounded-md text-sm transition-colors ${
-                isActive("/blog") 
-                  ? "bg-gray-100 font-medium text-gray-900" 
-                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-              }`}
+              href="/site"
+              className={isActive("/blog") ? "font-medium" : "opacity-80 hover:opacity-100"}
             >
               Blog
             </Link>
             <Link
-              href="/sobre"
-              onClick={closeMenu}
-              className={`px-3 py-2 rounded-md text-sm transition-colors ${
-                isActive("/sobre") 
-                  ? "bg-gray-100 font-medium text-gray-900" 
-                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-              }`}
+              href="/site"
+              className={isActive("/sobre") ? "font-medium" : "opacity-80 hover:opacity-100"}
             >
               Sobre
             </Link>
             <Link
-              href="/contato"
-              onClick={closeMenu}
-              className={`px-3 py-2 rounded-md text-sm transition-colors ${
-                isActive("/contato") 
-                  ? "bg-gray-100 font-medium text-gray-900" 
-                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-              }`}
+              href="/site"
+              className={isActive("/contato") ? "font-medium" : "opacity-80 hover:opacity-100"}
             >
               Contato
             </Link>
           </nav>
+
+          {/* Mobile menu button */}
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="md:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+            aria-label="Toggle menu"
+          >
+            <div className="w-5 h-5 flex flex-col justify-center items-center">
+              <span className={`block w-4 h-0.5 bg-gray-600 transition-all duration-300 ${isMenuOpen ? 'rotate-45 translate-y-1' : ''}`}></span>
+              <span className={`block w-4 h-0.5 bg-gray-600 transition-all duration-300 mt-1 ${isMenuOpen ? 'opacity-0' : ''}`}></span>
+              <span className={`block w-4 h-0.5 bg-gray-600 transition-all duration-300 mt-1 ${isMenuOpen ? '-rotate-45 -translate-y-1' : ''}`}></span>
+            </div>
+          </button>
         </div>
-      )}
+
+        {/* Mobile Navigation */}
+        {isMenuOpen && (
+          <nav className="md:hidden py-4 border-t border-gray-200">
+            <div className="flex flex-col space-y-4">
+              <Link
+                href="/site"
+                className="text-gray-600 hover:text-gray-900"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Sites
+              </Link>
+              <Link
+                href="/site"
+                className="text-gray-600 hover:text-gray-900"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Categorias
+              </Link>
+              <Link
+                href="/site"
+                className="text-gray-600 hover:text-gray-900"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Blog
+              </Link>
+              <Link
+                href="/site"
+                className="text-gray-600 hover:text-gray-900"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Sobre
+              </Link>
+              <Link
+                href="/site"
+                className="text-gray-600 hover:text-gray-900"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Contato
+              </Link>
+            </div>
+          </nav>
+        )}
+      </div>
     </header>
   );
 }

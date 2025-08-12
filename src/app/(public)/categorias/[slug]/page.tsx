@@ -1,28 +1,29 @@
 import { notFound } from "next/navigation";
 import { getDataFilePath, readJsonFile } from "@/lib/fsData";
 import { CardImage } from "@/components/OptimizedImage";
-
-type Params = {
-  slug: string;
-};
+import Link from "next/link";
 
 type SiteItem = {
   slug: string;
   name: string;
-  cover: string;
-  short_desc: string;
+  cover?: string;
+  short_desc?: string;
   categories?: string[];
 };
 
 type CategoryItem = {
   slug: string;
   title: string;
-  description?: string;
+};
+
+type Params = {
+  slug: string;
 };
 
 export async function generateStaticParams() {
-  const file = getDataFilePath("categories.json");
-  const categories = await readJsonFile<CategoryItem[]>(file, []);
+  const catsFile = getDataFilePath("categories.json");
+  const categories = await readJsonFile<CategoryItem[]>(catsFile, []);
+
   return categories.map((category) => ({
     slug: category.slug,
   }));
@@ -54,12 +55,12 @@ export default async function CategoryPage({ params }: { params: Promise<Params>
           {sites.map((s) => (
             <div key={s.slug} className="max-w-[320px]">
               <div className="[&>*]:w-full">
-                <a
-                  href={`/${s.slug}`}
+                <Link
+                  href="/site"
                   className="block rounded-lg overflow-hidden border border-neutral-200 bg-white shadow-sm hover:shadow"
                 >
                   <CardImage 
-                    src={s.cover} 
+                    src={s.cover || ""} 
                     alt={s.name} 
                     className="h-40 w-full" 
                   />
@@ -67,7 +68,7 @@ export default async function CategoryPage({ params }: { params: Promise<Params>
                     <div className="font-medium">{s.name}</div>
                     <p className="text-sm text-neutral-600 line-clamp-2">{s.short_desc}</p>
                   </div>
-                </a>
+                </Link>
               </div>
             </div>
           ))}

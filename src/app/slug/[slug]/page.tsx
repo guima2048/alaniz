@@ -1,67 +1,56 @@
 import { notFound } from "next/navigation";
 import { getDataFilePath, readJsonFile } from "@/lib/fsData";
-import { getSupabase } from "@/lib/supabase";
-import { MDXRemote } from "next-mdx-remote/rsc";
-import { RateForm } from "@/components/RateForm";
-import { Comments } from "@/components/Comments";
+import { HeroImage } from "@/components/OptimizedImage";
 import { VisitSiteButton } from "@/components/VisitSiteButton";
 import { SiteRating } from "@/components/SiteRating";
-import { HeroImage } from "@/components/OptimizedImage";
+import { RateForm } from "@/components/RateForm";
+import { Comments } from "@/components/Comments";
+import { MDXRemote } from "next-mdx-remote/rsc";
 import fs from "node:fs";
 import path from "node:path";
-
-type Params = {
-  slug: string;
-};
 
 type SiteItem = {
   slug: string;
   name: string;
   url: string;
-  short_desc: string;
-  features?: string[];
   hero?: string;
+  short_desc?: string;
+  features?: string[];
 };
 
-// Página dinâmica: novos sites aparecem sem rebuild
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+type Params = {
+  slug: string;
+};
+
+export async function generateStaticParams() {
+  const file = getDataFilePath("sites.json");
+  const sites = await readJsonFile<SiteItem[]>(file, []);
+
+  return sites.map((site) => ({
+    slug: site.slug,
+  }));
+}
 
 export default async function EditorialPage({ params }: { params: Promise<Params> }) {
   const { slug } = await params;
-
-  // 1) Tenta Supabase
-  const supabase = getSupabase();
-  let site: SiteItem | null = null;
-  if (supabase) {
-    const { data, error } = await supabase
-      .from("sites")
-      .select("*")
-      .eq("slug", slug)
-      .maybeSingle();
-    if (!error && data) {
-      site = data as unknown as SiteItem;
-    }
-  }
-
-  // 2) Fallback: arquivo local
-  if (!site) {
-    const file = getDataFilePath("sites.json");
-    const sites = await readJsonFile<SiteItem[]>(file, []);
-    site = sites.find((s) => s.slug === slug) || null;
-  }
+  
+  const file = getDataFilePath("sites.json");
+  const sites = await readJsonFile<SiteItem[]>(file, []);
+  const site = sites.find((s) => s.slug === slug);
 
   if (!site) {
     notFound();
   }
 
-  const mdxPath = path.join(process.cwd(), "src", "content", "editoriais", `${slug}.mdx`);
+  // Verificar se existe arquivo MDX
+  const mdxPath = path.join(process.cwd(), "src/content/editoriais", `${slug}.mdx`);
   const hasMdx = fs.existsSync(mdxPath);
 
   const fallback = (
-    <div className="prose max-w-none">
-      <h2>Informações Adicionais</h2>
-      <p>Para mais informações sobre {site.name}, visite o site oficial.</p>
+    <div>
+      <p className="text-neutral-700 leading-relaxed">
+        {site.short_desc || "Descrição em breve..."}
+      </p>
     </div>
   );
 

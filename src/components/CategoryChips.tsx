@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 
 type Category = {
@@ -17,7 +18,7 @@ export function CategoryChips({ categories = [] }: Props) {
   return (
     <div className="flex flex-wrap gap-2">
       <Link
-        href="/"
+        href="/site"
         className="px-3 py-1 rounded-full text-sm border bg-neutral-900 text-white border-neutral-900"
       >
         Todas
@@ -25,7 +26,7 @@ export function CategoryChips({ categories = [] }: Props) {
       {categories.slice(0, 5).map((c) => (
         <Link
           key={c.slug}
-          href={`/?categoria=${encodeURIComponent(c.slug)}`}
+          href="/site"
           className="px-3 py-1 rounded-full text-sm border bg-white text-neutral-700 border-neutral-300 hover:border-neutral-400 transition-colors"
         >
           {c.title}
