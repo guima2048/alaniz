@@ -10,18 +10,18 @@
     "order": 2
   },
   {
+    "slug": "famosos",
+    "title": "Famosos",
+    "order": 3
+  },
+  {
     "slug": "lgbtqiapn",
     "title": "LGBTQIAPN+",
-    "order": 3
+    "order": 4
   },
   {
     "slug": "cristao",
     "title": "Cristão",
-    "order": 4
-  },
-  {
-    "slug": "famosos",
-    "title": "Famosos",
     "order": 5
   },
   {
