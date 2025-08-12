@@ -4,38 +4,36 @@ import { getSupabase } from "@/lib/supabase";
 type Category = { slug: string; title: string; order?: number };
 
 export async function GET() {
-  // Tentar buscar dados do Supabase primeiro
   const supabase = getSupabase();
-  if (supabase) {
-    try {
-      const { data, error } = await supabase
-        .from("categories")
-        .select("*")
-        .order("order", { ascending: true })
-        .order("title");
-      
-      if (!error && data && Array.isArray(data)) {
-        console.log(`✅ Buscadas ${data.length} categorias do Supabase`);
-        return NextResponse.json(data);
-      } else {
-        console.error("Erro ao buscar categorias do Supabase:", error);
-      }
-    } catch (e) {
-      console.error("Exceção ao buscar categorias do Supabase:", e);
-    }
+  if (!supabase) {
+    console.error("❌ Supabase não disponível");
+    return NextResponse.json({ error: "Supabase não disponível" }, { status: 500 });
   }
 
-  // Fallback para dados estáticos se Supabase não estiver disponível
-  console.log("⚠️ Usando dados estáticos como fallback");
-  const staticData: Category[] = [
-    { slug: "todos", title: "Todos", order: 1 },
-    { slug: "famosos", title: "Famosos", order: 2 },
-    { slug: "elite", title: "Elite", order: 3 },
-    { slug: "sugar", title: "Sugar", order: 4 },
-    { slug: "lgbtqiapn", title: "LGBTQIAPN+", order: 5 }
-  ];
-  
-  return NextResponse.json(staticData);
+  try {
+    const { data, error } = await supabase
+      .from("categories")
+      .select("*")
+      .order("order", { ascending: true })
+      .order("title");
+    
+    if (error) {
+      console.error("❌ Erro ao buscar categorias do Supabase:", error);
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+    
+    if (!data || !Array.isArray(data)) {
+      console.error("❌ Dados inválidos do Supabase");
+      return NextResponse.json({ error: "Dados inválidos" }, { status: 500 });
+    }
+    
+    console.log(`✅ Buscadas ${data.length} categorias do Supabase`);
+    return NextResponse.json(data);
+    
+  } catch (e) {
+    console.error("❌ Exceção ao buscar categorias do Supabase:", e);
+    return NextResponse.json({ error: "Erro interno" }, { status: 500 });
+  }
 }
 
 export async function PUT(req: NextRequest) {
@@ -43,36 +41,35 @@ export async function PUT(req: NextRequest) {
   if (!body.slug || !body.title) return NextResponse.json({ ok: false }, { status: 400 });
   
   const supabase = getSupabase();
-  if (supabase) {
-    try {
-      // Remover order se não existir na tabela
-      const categoryData = { slug: body.slug, title: body.title };
-      
-      const { error } = await supabase
+  if (!supabase) {
+    return NextResponse.json({ ok: false, error: "Supabase não disponível" }, { status: 500 });
+  }
+  
+  try {
+    // Remover order se não existir na tabela
+    const categoryData = { slug: body.slug, title: body.title };
+    
+    const { error } = await supabase
+      .from("categories")
+      .upsert(categoryData, { onConflict: "slug" });
+    
+    if (error && error.message.includes("order")) {
+      // Se der erro com order, tentar sem order
+      console.log("⚠️ Coluna order não existe, salvando sem order...");
+      const { error: errorWithoutOrder } = await supabase
         .from("categories")
         .upsert(categoryData, { onConflict: "slug" });
       
-      if (error && error.message.includes("order")) {
-        // Se der erro com order, tentar sem order
-        console.log("⚠️ Coluna order não existe, salvando sem order...");
-        const { error: errorWithoutOrder } = await supabase
-          .from("categories")
-          .upsert(categoryData, { onConflict: "slug" });
-        
-        if (errorWithoutOrder) throw errorWithoutOrder;
-        return NextResponse.json({ ok: true });
-      }
-      
-      if (error) throw error;
+      if (errorWithoutOrder) throw errorWithoutOrder;
       return NextResponse.json({ ok: true });
-    } catch (e) {
-      console.error("Supabase error:", e);
-      // Fallback para arquivo local
     }
+    
+    if (error) throw error;
+    return NextResponse.json({ ok: true });
+  } catch (e) {
+    console.error("Supabase error:", e);
+    return NextResponse.json({ ok: false, error: "Erro ao salvar" }, { status: 500 });
   }
-  
-  // Fallback: retornar erro pois não temos acesso a arquivos no Vercel
-  return NextResponse.json({ ok: false, error: "Not available in production" }, { status: 501 });
 }
 
 export async function DELETE(req: NextRequest) {
@@ -81,22 +78,21 @@ export async function DELETE(req: NextRequest) {
   if (!slug) return NextResponse.json({ ok: false }, { status: 400 });
   
   const supabase = getSupabase();
-  if (supabase) {
-    try {
-      const { error } = await supabase
-        .from("categories")
-        .delete()
-        .eq("slug", slug);
-      if (error) throw error;
-      return NextResponse.json({ ok: true });
-    } catch (e) {
-      console.error("Supabase error:", e);
-      // Fallback para arquivo local
-    }
+  if (!supabase) {
+    return NextResponse.json({ ok: false, error: "Supabase não disponível" }, { status: 500 });
   }
   
-  // Fallback: retornar erro pois não temos acesso a arquivos no Vercel
-  return NextResponse.json({ ok: false, error: "Not available in production" }, { status: 501 });
+  try {
+    const { error } = await supabase
+      .from("categories")
+      .delete()
+      .eq("slug", slug);
+    if (error) throw error;
+    return NextResponse.json({ ok: true });
+  } catch (e) {
+    console.error("Supabase error:", e);
+    return NextResponse.json({ ok: false, error: "Erro ao deletar" }, { status: 500 });
+  }
 }
 
 export async function PATCH(req: NextRequest) {
@@ -106,33 +102,32 @@ export async function PATCH(req: NextRequest) {
   }
   
   const supabase = getSupabase();
-  if (supabase) {
-    try {
-      // Tentar atualizar cada categoria com sua nova ordem
-      for (const cat of body.categories) {
-        const { error } = await supabase
-          .from("categories")
-          .update({ order: cat.order })
-          .eq("slug", cat.slug);
-        if (error) {
-          console.error("Supabase error:", error);
-          // Se der erro, pode ser que a coluna order não exista
-          // Por enquanto, apenas retornar sucesso sem fazer nada
-          return NextResponse.json({ 
-            ok: true, 
-            warning: "Order column not available in database, using local file" 
-          });
-        }
-      }
-      return NextResponse.json({ ok: true });
-    } catch (e) {
-      console.error("Supabase error:", e);
-      // Fallback para arquivo local
-    }
+  if (!supabase) {
+    return NextResponse.json({ ok: false, error: "Supabase não disponível" }, { status: 500 });
   }
   
-  // Fallback: retornar erro pois não temos acesso a arquivos no Vercel
-  return NextResponse.json({ ok: false, error: "Not available in production" }, { status: 501 });
+  try {
+    // Tentar atualizar cada categoria com sua nova ordem
+    for (const cat of body.categories) {
+      const { error } = await supabase
+        .from("categories")
+        .update({ order: cat.order })
+        .eq("slug", cat.slug);
+      if (error) {
+        console.error("Supabase error:", error);
+        // Se der erro, pode ser que a coluna order não exista
+        // Por enquanto, apenas retornar sucesso sem fazer nada
+        return NextResponse.json({ 
+          ok: true, 
+          warning: "Order column not available in database, using local file" 
+        });
+      }
+    }
+    return NextResponse.json({ ok: true });
+  } catch (e) {
+    console.error("Supabase error:", e);
+    return NextResponse.json({ ok: false, error: "Erro ao atualizar" }, { status: 500 });
+  }
 }
 
 
