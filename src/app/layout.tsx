@@ -4,7 +4,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { GTMNoScript, GTMSnippet, GA4Snippet } from "@/lib/gtm";
 import { ConsentBanner } from "@/components/ConsentBanner";
-import { GA4Debug } from "@/components/GA4Debug";
+
 import { defaultMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = defaultMetadata;
@@ -61,7 +61,6 @@ export default function RootLayout({
         <main className="min-h-[70vh]">{children}</main>
         <Footer />
         <ConsentBanner />
-        <GA4Debug />
       </body>
     </html>
   );

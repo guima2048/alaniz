@@ -210,6 +210,86 @@ export default function SiteEditorPage() {
           <div>Selecione um site na lista ao lado.</div>
         ) : (
           <div className="space-y-4">
+            <div className="bg-blue-50 border border-blue-200 rounded p-3 mb-4">
+              <h3 className="font-medium text-blue-900 mb-2">📱 Formatos de Imagem para Celular:</h3>
+              <ul className="text-sm text-blue-800 space-y-1">
+                <li><strong>Logo:</strong> PNG, JPG, SVG - até 2MB - recomendado: quadrado 120x120px</li>
+                <li><strong>Capa:</strong> PNG, JPG - até 5MB - recomendado: 800x420px (proporção 1.9:1)</li>
+                <li><strong>Hero:</strong> PNG, JPG - até 5MB - recomendado: 800x213px (proporção 3.75:1)</li>
+              </ul>
+              <div className="mt-3 pt-3 border-t border-blue-200">
+                <h4 className="font-medium text-blue-900 mb-2">💻 Dimensões para Desktop (opcional):</h4>
+                <ul className="text-sm text-blue-800 space-y-1">
+                  <li><strong>Logo:</strong> 200x200px (quadrado)</li>
+                  <li><strong>Capa:</strong> 1200x630px (proporção 1.9:1)</li>
+                  <li><strong>Hero:</strong> 1200x320px (proporção 3.75:1)</li>
+                </ul>
+                <p className="text-xs text-blue-700 mt-2">
+                  💡 <strong>Dica:</strong> Use as dimensões para celular para melhor performance e carregamento mais rápido em dispositivos móveis!
+                </p>
+              </div>
+              {selected.url && (
+                <div className="mt-3 pt-3 border-t border-blue-200">
+                  <button
+                    type="button"
+                    className="px-3 py-1 text-sm rounded bg-green-600 text-white hover:bg-green-700"
+                    onClick={async () => {
+                      if (!selected.url) {
+                        alert("Adicione a URL do site primeiro");
+                        return;
+                      }
+                      try {
+                        const types = ['logos', 'covers', 'heroes'];
+                        let successCount = 0;
+                        
+                        for (const type of types) {
+                          try {
+                            const res = await fetch("/api/media/fetch-and-save", {
+                              method: "POST",
+                              headers: { "Content-Type": "application/json" },
+                              body: JSON.stringify({
+                                url: selected.url,
+                                type,
+                                slug: selected.slug
+                              })
+                            });
+                            if (res.ok) {
+                              const { path } = await res.json();
+                              if (type === 'logos') {
+                                setLogos((prev) => Array.from(new Set([...prev, path])));
+                                updateSelected({ logo: path });
+                              } else if (type === 'covers') {
+                                setCovers((prev) => Array.from(new Set([...prev, path])));
+                                updateSelected({ cover: path });
+                              } else if (type === 'heroes') {
+                                setHeroes((prev) => Array.from(new Set([...prev, path])));
+                                updateSelected({ hero: path });
+                              }
+                              successCount++;
+                            }
+                          } catch {
+                            console.error(`Erro ao buscar ${type}`);
+                          }
+                        }
+                        
+                        if (successCount > 0) {
+                          alert(`✅ ${successCount} imagem(ns) buscada(s) automaticamente!`);
+                        } else {
+                          alert("❌ Não foi possível buscar imagens automaticamente");
+                        }
+                      } catch {
+                        alert("Falha ao buscar imagens automaticamente");
+                      }
+                    }}
+                  >
+                    🚀 Buscar Todas as Imagens Automaticamente
+                  </button>
+                  <p className="text-xs text-blue-700 mt-1">
+                    Busca logo, capa e hero do site automaticamente usando meta tags
+                  </p>
+                </div>
+              )}
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm mb-1">Nome</label>
@@ -250,7 +330,7 @@ export default function SiteEditorPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm mb-1">Logo (home)</label>
+                <label className="block text-sm mb-1">Logo (home) - PNG, JPG, SVG até 2MB - 120x120px</label>
                 <select className="w-full border rounded px-3 py-2" value={selected.logo || ""}
                   onChange={(e) => updateSelected({ logo: e.target.value || undefined })}>
                   <option value="">— selecionar —</option>
@@ -282,6 +362,40 @@ export default function SiteEditorPage() {
                   >
                     <input type="file" name="file" accept="image/*" className="text-sm" />
                   </form>
+                  <button
+                    type="button"
+                    className="px-2 py-1 text-xs rounded bg-blue-600 text-white hover:bg-blue-700"
+                    onClick={async () => {
+                      if (!selected.url) {
+                        alert("Adicione a URL do site primeiro");
+                        return;
+                      }
+                      try {
+                        const res = await fetch("/api/media/fetch-and-save", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            url: selected.url,
+                            type: "logos",
+                            slug: selected.slug
+                          })
+                        });
+                        if (res.ok) {
+                          const { path } = await res.json();
+                          setLogos((prev) => Array.from(new Set([...prev, path])));
+                          updateSelected({ logo: path });
+                          alert("Logo buscado automaticamente!");
+                        } else {
+                          const error = await res.json();
+                          alert(`Erro: ${error.error}`);
+                        }
+                      } catch {
+                        alert("Falha ao buscar logo automaticamente");
+                      }
+                    }}
+                  >
+                    🔍 Buscar
+                  </button>
                   {selected.logo ? (
                     <button
                       type="button"
@@ -303,7 +417,7 @@ export default function SiteEditorPage() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm mb-1">Capa (home)</label>
+                <label className="block text-sm mb-1">Capa (home) - PNG, JPG até 5MB, 800x420px</label>
                 <select className="w-full border rounded px-3 py-2" value={selected.cover || ""}
                   onChange={(e) => updateSelected({ cover: e.target.value || undefined })}>
                   <option value="">— selecionar —</option>
@@ -334,6 +448,40 @@ export default function SiteEditorPage() {
                   >
                     <input type="file" name="file" accept="image/*" className="text-sm" />
                   </form>
+                  <button
+                    type="button"
+                    className="px-2 py-1 text-xs rounded bg-blue-600 text-white hover:bg-blue-700"
+                    onClick={async () => {
+                      if (!selected.url) {
+                        alert("Adicione a URL do site primeiro");
+                        return;
+                      }
+                      try {
+                        const res = await fetch("/api/media/fetch-and-save", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            url: selected.url,
+                            type: "covers",
+                            slug: selected.slug
+                          })
+                        });
+                        if (res.ok) {
+                          const { path } = await res.json();
+                          setCovers((prev) => Array.from(new Set([...prev, path])));
+                          updateSelected({ cover: path });
+                          alert("Capa buscada automaticamente!");
+                        } else {
+                          const error = await res.json();
+                          alert(`Erro: ${error.error}`);
+                        }
+                      } catch {
+                        alert("Falha ao buscar capa automaticamente");
+                      }
+                    }}
+                  >
+                    🔍 Buscar
+                  </button>
                   {selected.cover ? (
                     <button
                       type="button"
@@ -355,7 +503,7 @@ export default function SiteEditorPage() {
                 </div>
               </div>
               <div className="md:col-span-2">
-                <label className="block text-sm mb-1">HERO (na página do site)</label>
+                <label className="block text-sm mb-1">HERO (na página do site) - PNG, JPG até 5MB, 800x213px</label>
                 <select className="w-full border rounded px-3 py-2" value={selected.hero || ""}
                   onChange={(e) => updateSelected({ hero: e.target.value || undefined })}>
                   <option value="">— selecionar —</option>
@@ -386,6 +534,40 @@ export default function SiteEditorPage() {
                   >
                     <input type="file" name="file" accept="image/*" className="text-sm" />
                   </form>
+                  <button
+                    type="button"
+                    className="px-2 py-1 text-xs rounded bg-blue-600 text-white hover:bg-blue-700"
+                    onClick={async () => {
+                      if (!selected.url) {
+                        alert("Adicione a URL do site primeiro");
+                        return;
+                      }
+                      try {
+                        const res = await fetch("/api/media/fetch-and-save", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            url: selected.url,
+                            type: "heroes",
+                            slug: selected.slug
+                          })
+                        });
+                        if (res.ok) {
+                          const { path } = await res.json();
+                          setHeroes((prev) => Array.from(new Set([...prev, path])));
+                          updateSelected({ hero: path });
+                          alert("Hero buscado automaticamente!");
+                        } else {
+                          const error = await res.json();
+                          alert(`Erro: ${error.error}`);
+                        }
+                      } catch {
+                        alert("Falha ao buscar hero automaticamente");
+                      }
+                    }}
+                  >
+                    🔍 Buscar
+                  </button>
                   {selected.hero ? (
                     <button
                       type="button"

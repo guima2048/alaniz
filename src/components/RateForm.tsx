@@ -52,7 +52,7 @@ export function RateForm({ slug }: Props) {
   return (
     <form onSubmit={handleSubmit} className="space-y-2">
       <div className="flex items-center gap-2">
-        <span className="text-sm text-neutral-600">Avalie:</span>
+        <span className="text-sm font-bold text-neutral-600">Avalie:</span>
         <Stars score={score} onScoreChange={setScore} />
       </div>
       {score > 0 && (

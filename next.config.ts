@@ -27,7 +27,45 @@ const nextConfig: NextConfig = {
   },
   // Configurações de compressão
   compress: true,
-  // Deixe o Next gerenciar CSS/JS; customizações anteriores causavam conflito no dev
+  // Otimizações de CSS
+  webpack: (config, { dev, isServer }) => {
+    if (!dev && !isServer) {
+      // Otimizações para produção
+      config.optimization.splitChunks.cacheGroups = {
+        ...config.optimization.splitChunks.cacheGroups,
+        styles: {
+          name: 'styles',
+          test: /\.(css|scss)$/,
+          chunks: 'all',
+          enforce: true,
+        },
+      };
+    }
+    return config;
+  },
+  // Headers para otimização de cache
+  async headers() {
+    return [
+      {
+        source: '/non-critical.css',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/_next/static/css/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;

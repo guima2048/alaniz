@@ -4,6 +4,7 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import { RateForm } from "@/components/RateForm";
 import { Comments } from "@/components/Comments";
 import { VisitSiteButton } from "@/components/VisitSiteButton";
+import { SiteRating } from "@/components/SiteRating";
 import { HeroImage } from "@/components/OptimizedImage";
 import fs from "node:fs";
 import path from "node:path";
@@ -46,13 +47,8 @@ export default async function EditorialPage({ params }: { params: Promise<Params
 
   const fallback = (
     <div className="prose max-w-none">
-      <h2>Sobre {site.name}</h2>
-      <p>{site.short_desc}</p>
-      <p>
-        <a href={site.url} target="_blank" rel="noopener noreferrer">
-          Visitar {site.name}
-        </a>
-      </p>
+      <h2>Informações Adicionais</h2>
+      <p>Para mais informações sobre {site.name}, visite o site oficial.</p>
     </div>
   );
 
@@ -66,6 +62,15 @@ export default async function EditorialPage({ params }: { params: Promise<Params
               alt={`Hero ${site.name}`} 
               className="w-full h-56 md:h-72 rounded" 
             />
+            <div className="mt-4 flex items-center gap-4">
+              <VisitSiteButton
+                url={site.url}
+                slug={site.slug}
+                name={site.name}
+                className="inline-flex items-center rounded-md bg-black text-white px-6 py-3 hover:bg-gray-800 font-medium text-lg"
+              />
+              <SiteRating slug={site.slug} />
+            </div>
           </div>
         )}
         <h1 className="text-2xl font-semibold text-neutral-900">{site.name}</h1>
@@ -77,27 +82,21 @@ export default async function EditorialPage({ params }: { params: Promise<Params
             </span>
           ))}
         </div>
-        <div className="mt-2">
-          <RateForm slug={site.slug} />
-        </div>
+
       </header>
 
       <section className="prose max-w-none">
         {hasMdx ? (
           <MDXRemote source={fs.readFileSync(mdxPath, "utf8") as string} />
         ) : (
-          fallback
+          <div>
+            {fallback}
+            <div className="mt-4">
+              <RateForm slug={site.slug} />
+            </div>
+          </div>
         )}
       </section>
-
-      <div>
-        <VisitSiteButton
-          url={site.url}
-          slug={site.slug}
-          name={site.name}
-          className="inline-flex items-center rounded-md bg-neutral-900 text-white px-4 py-2 hover:bg-neutral-800"
-        />
-      </div>
 
       <Comments slug={site.slug} />
     </div>

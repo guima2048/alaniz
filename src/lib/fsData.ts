@@ -31,4 +31,22 @@ export async function writeJsonFile(filePath: string, data: unknown): Promise<vo
   await fsp.writeFile(filePath, json, "utf8");
 }
 
+export async function getSites() {
+  const filePath = getDataFilePath("sites.json");
+  return await readJsonFile(filePath, []);
+}
+
+export async function updateSite(slug: string, updates: Record<string, unknown>) {
+  const sites = await getSites();
+  const siteIndex = sites.findIndex((site: Record<string, unknown>) => site.slug === slug);
+  
+  if (siteIndex !== -1) {
+    (sites as Record<string, unknown>[])[siteIndex] = { ...(sites[siteIndex] as Record<string, unknown>), ...updates };
+    const filePath = getDataFilePath("sites.json");
+    await writeJsonFile(filePath, sites);
+  }
+  
+  return sites[siteIndex];
+}
+
 

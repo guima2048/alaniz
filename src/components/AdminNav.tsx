@@ -8,6 +8,7 @@ const navItems = [
   { href: "/admin/post", label: "Posts", icon: "📝", features: ["CRUD completo", "Deletar"] },
   { href: "/admin/categorias", label: "Categorias", icon: "🏷️", features: ["CRUD completo", "Deletar"] },
   { href: "/admin/comentarios", label: "Comentários", icon: "💬", features: ["Visualizar", "Deletar", "Paginação"] },
+  { href: "/admin/relatorios", label: "Relatórios", icon: "📈", features: ["Atualização automática", "Relatórios CSV"] },
   { href: "/admin/sobre", label: "Sobre", icon: "ℹ️", features: ["Editar conteúdo"] },
 ];
 

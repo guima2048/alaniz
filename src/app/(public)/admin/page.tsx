@@ -237,6 +237,17 @@ export default function AdminLoginPage() {
           </Link>
 
           <Link 
+            href="/admin/relatorios" 
+            className="bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow"
+          >
+            <div className="flex items-center mb-4">
+              <span className="text-3xl mr-3">📊</span>
+              <h3 className="text-lg font-semibold">Relatórios</h3>
+            </div>
+            <p className="text-neutral-600 text-sm">Atualize automaticamente imagens de todos os sites e gere relatórios.</p>
+          </Link>
+
+          <Link 
             href="/" 
             className="bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow"
           >
