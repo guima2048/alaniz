@@ -34,7 +34,11 @@ export function OptimizedImage({
     return (
       <div 
         className={`${className} bg-gray-200 flex items-center justify-center`}
-        style={{ aspectRatio: `${width}/${height}` }}
+        style={{ 
+          aspectRatio: `${width}/${height}`,
+          width: '100%',
+          height: 'auto'
+        }}
       >
         <span className="text-gray-500 text-sm">Imagem não disponível</span>
       </div>
@@ -44,31 +48,53 @@ export function OptimizedImage({
   // Se a imagem é externa ou não suportada pelo next/image, usar img normal
   if (src.startsWith('http') || src.includes('data:') || !src.startsWith('/')) {
     return (
-      <>
+      <div 
+        className={`${className} relative`}
+        style={{ 
+          aspectRatio: `${width}/${height}`,
+          width: '100%',
+          height: 'auto'
+        }}
+      >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-        src={src}
-        alt={alt}
-        width={width}
-        height={height}
-        className={`${className} ${isLoading ? 'animate-pulse bg-gray-200' : ''}`}
-        loading={loading}
-        onLoad={() => setIsLoading(false)}
-        onError={() => {
-          setError(true);
-          setIsLoading(false);
-        }}
-        style={{
-          aspectRatio: `${width}/${height}`,
-          objectFit: 'cover'
-        }}
+          src={src}
+          alt={alt}
+          width={width}
+          height={height}
+          className={`w-full h-full object-cover ${isLoading ? 'animate-pulse bg-gray-200' : ''}`}
+          loading={loading}
+          onLoad={() => setIsLoading(false)}
+          onError={() => {
+            setError(true);
+            setIsLoading(false);
+          }}
+          style={{
+            aspectRatio: `${width}/${height}`,
+            objectFit: 'cover'
+          }}
         />
-      </>
+        {isLoading && (
+          <div className="absolute inset-0 bg-gray-200 animate-pulse" />
+        )}
+        {error && (
+          <div className="absolute inset-0 bg-gray-100 flex items-center justify-center text-gray-500 text-sm">
+            Erro ao carregar imagem
+          </div>
+        )}
+      </div>
     );
   }
 
   return (
-    <div className={`relative ${className}`} style={{ aspectRatio: `${width}/${height}` }}>
+    <div 
+      className={`relative ${className}`} 
+      style={{ 
+        aspectRatio: `${width}/${height}`,
+        width: '100%',
+        height: 'auto'
+      }}
+    >
       <Image
         src={src}
         alt={alt}
@@ -78,7 +104,7 @@ export function OptimizedImage({
         loading={loading}
         placeholder={placeholder}
         sizes={sizes}
-        className={`transition-opacity duration-300 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
+        className={`transition-opacity duration-300 w-full h-full object-cover ${isLoading ? 'opacity-0' : 'opacity-100'}`}
         onLoad={() => setIsLoading(false)}
         onError={() => {
           setError(true);

@@ -17,8 +17,10 @@ interface Props {
 export function SiteRating({ slug }: Props) {
   const [rating, setRating] = useState<RatingData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const controller = new AbortController();
     
     const fetchRating = async () => {
@@ -46,26 +48,19 @@ export function SiteRating({ slug }: Props) {
     };
   }, [slug]);
 
-  if (loading) {
-    return (
-      <div className="inline-flex items-center gap-2 text-sm text-gray-500">
-        <div className="w-20 h-4 bg-gray-200 rounded animate-pulse"></div>
-      </div>
-    );
-  }
-
-  if (!rating || rating.count === 0) {
-    return (
-      <div className="inline-flex items-center gap-2 text-sm text-gray-500">
-        <span>Sem avaliações</span>
-      </div>
-    );
-  }
-
+  // Renderizar sempre o mesmo espaço para evitar CLS
   return (
-    <div className="inline-flex items-center gap-2">
-      <StarRatingDisplay value={rating.score} />
-      <RatingBadge avg={rating.score} count={rating.count} />
+    <div className="inline-flex items-center gap-2 text-sm site-rating">
+      {!mounted || loading ? (
+        <div className="w-20 h-4 bg-gray-200 rounded animate-pulse"></div>
+      ) : !rating || rating.count === 0 ? (
+        <span className="text-gray-500">Sem avaliações</span>
+      ) : (
+        <>
+          <StarRatingDisplay value={rating.score} />
+          <RatingBadge avg={rating.score} count={rating.count} />
+        </>
+      )}
     </div>
   );
 }

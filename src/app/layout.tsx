@@ -15,6 +15,69 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <head>
+        {/* CSS Crítico para prevenir CLS */}
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
+              /* Prevenção de CLS - Dimensões críticas */
+              .aspect-ratio-reserved {
+                aspect-ratio: 16/9;
+                width: 100%;
+                height: auto;
+              }
+              
+              .card-container {
+                height: 144px;
+                width: 240px;
+                min-width: 240px;
+                max-width: 240px;
+              }
+              
+              .card-image-container {
+                height: 144px;
+                width: 100%;
+              }
+              
+              .rating-badge {
+                min-width: 60px;
+                min-height: 20px;
+              }
+              
+              .site-rating {
+                min-width: 120px;
+                min-height: 20px;
+              }
+              
+              .consent-banner {
+                min-height: 80px;
+              }
+              
+              .alaniz-text {
+                min-height: 80px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              }
+              
+              /* Prevenção de layout shift para imagens */
+              img {
+                max-width: 100%;
+                height: auto;
+                display: block;
+              }
+              
+              /* Garantir que elementos tenham dimensões consistentes */
+              .line-clamp-2 {
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                min-height: 40px;
+              }
+            `,
+          }}
+        />
+        
         {/* Favicons otimizados */}
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
