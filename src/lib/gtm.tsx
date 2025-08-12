@@ -29,6 +29,7 @@ export function GA4Snippet() {
   if (!ga4.enabled || !ga4.id) return null;
   return (
     <>
+      {/* Google tag (gtag.js) - Tag oficial do Google Analytics 4 */}
       <Script
         src={`https://www.googletagmanager.com/gtag/js?id=${ga4.id}`}
         strategy="afterInteractive"
