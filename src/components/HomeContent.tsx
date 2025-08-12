@@ -17,25 +17,17 @@ export function HomeContent({ sites, categories }: { sites: SiteItem[]; categori
 
   return (
     <div className="space-y-8">
-      {/* Mostrar "Todos os Sites" primeiro */}
-      {(() => {
-        const todosCategory = sortedCategories.find(c => c.slug === 'todos');
-        if (todosCategory) {
+      {/* Mostrar todas as categorias na ordem definida */}
+      {sortedCategories.map((c) => {
+        if (c.slug === 'todos') {
           return (
             <Row 
-              key="todos" 
-              title={todosCategory.title} 
+              key={c.slug} 
+              title={c.title} 
               sites={sortedSites} 
             />
           );
-        }
-        return null;
-      })()}
-      
-      {/* Mostrar outras categorias na ordem definida */}
-      {sortedCategories
-        .filter(c => c.slug !== 'todos')
-        .map((c) => {
+        } else {
           const categorySites = sites.filter((s) => (s.categories || []).includes(c.slug));
           const sortedCategorySites = categorySites.sort((a, b) => (b.rating_avg || 0) - (a.rating_avg || 0));
           
@@ -46,7 +38,8 @@ export function HomeContent({ sites, categories }: { sites: SiteItem[]; categori
               sites={sortedCategorySites} 
             />
           );
-        })}
+        }
+      })}
     </div>
   );
 }
