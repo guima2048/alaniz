@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getDataFilePath, readJsonFile, writeJsonFile } from "@/lib/fsData";
 import { getSupabase } from "@/lib/supabase";
 
 type SiteItem = {
@@ -34,14 +33,48 @@ export async function GET() {
       return NextResponse.json(data || []);
     } catch (e) {
       console.error("Supabase error:", e);
-      // Fallback para arquivo local
     }
   }
   
-  // Fallback: arquivo local
-  const filePath = getDataFilePath("sites.json");
-  const data = await readJsonFile<SiteItem[]>(filePath, []);
-  return NextResponse.json(data);
+  // Dados estáticos como fallback
+  const staticData: SiteItem[] = [
+    {
+      "slug": "bebaby",
+      "name": "Bebaby",
+      "url": "https://www.bebaby.app",
+      "logo": "https://ijzceqcwzrylhgmixaqq.supabase.co/storage/v1/object/public/media/logos/bebaby-1754961380949.svg",
+      "cover": "https://ijzceqcwzrylhgmixaqq.supabase.co/storage/v1/object/public/media/covers/bebaby-1754961392569.svg",
+      "hero": "https://ijzceqcwzrylhgmixaqq.supabase.co/storage/v1/object/public/media/heroes/bebaby-1754961406729.svg",
+      "short_desc": "O BeBaby é uma plataforma reconhecida no mercado, usada por milhares de pessoas que buscam interações reais e de qualidade.",
+      "categories": ["todos", "Elite", "Famosos"],
+      "rating_avg": 9.2,
+      "rating_count": 965
+    },
+    {
+      "slug": "tinder",
+      "name": "Tinder",
+      "url": "https://tinder.com",
+      "logo": "https://ijzceqcwzrylhgmixaqq.supabase.co/storage/v1/object/public/media/logos/tinder.svg",
+      "cover": "https://ijzceqcwzrylhgmixaqq.supabase.co/storage/v1/object/public/media/covers/tinder.svg",
+      "short_desc": "O Tinder é uma das plataformas mais populares para encontros online.",
+      "categories": ["todos", "Famosos"],
+      "rating_avg": 8.5,
+      "rating_count": 15000
+    },
+    {
+      "slug": "bumble",
+      "name": "Bumble",
+      "url": "https://bumble.com",
+      "logo": "https://ijzceqcwzrylhgmixaqq.supabase.co/storage/v1/object/public/media/logos/bumble.svg",
+      "cover": "https://ijzceqcwzrylhgmixaqq.supabase.co/storage/v1/object/public/media/covers/bumble.svg",
+      "short_desc": "O Bumble é uma plataforma que dá às mulheres o controle da conversa.",
+      "categories": ["todos", "Famosos"],
+      "rating_avg": 8.8,
+      "rating_count": 8000
+    }
+  ];
+  
+  return NextResponse.json(staticData);
 }
 
 export async function PUT(req: NextRequest) {
@@ -62,37 +95,8 @@ export async function PUT(req: NextRequest) {
     }
   }
   
-  // Fallback: arquivo local
-  const filePath = getDataFilePath("sites.json");
-  const list = await readJsonFile<SiteItem[]>(filePath, []);
-  const idx = list.findIndex((s) => s.slug === body.slug);
-  if (idx === -1) {
-    // cria novo
-    const newItem: SiteItem = {
-      slug: String(body.slug),
-      name: String(body.name || "Novo site"),
-      url: String(body.url || ""),
-      logo: body.logo,
-      cover: body.cover,
-      hero: body.hero,
-      short_desc: body.short_desc,
-      categories: Array.isArray(body.categories) ? body.categories : [],
-      price_min: typeof body.price_min === "number" ? body.price_min : undefined,
-      price_model: body.price_model,
-      style: body.style,
-      audience: body.audience,
-      privacy_level: body.privacy_level,
-      editorial_score: typeof body.editorial_score === "number" ? body.editorial_score : undefined,
-      rating_avg: typeof body.rating_avg === "number" ? body.rating_avg : undefined,
-      rating_count: typeof body.rating_count === "number" ? body.rating_count : undefined,
-      features: Array.isArray(body.features) ? body.features : [],
-    };
-    list.push(newItem);
-  } else {
-    list[idx] = { ...list[idx], ...body } as SiteItem;
-  }
-  await writeJsonFile(filePath, list);
-  return NextResponse.json({ ok: true });
+  // Fallback: retornar erro pois não temos acesso a arquivos no Vercel
+  return NextResponse.json({ ok: false, error: "Not available in production" }, { status: 501 });
 }
 
 export async function DELETE(req: NextRequest) {
@@ -115,13 +119,8 @@ export async function DELETE(req: NextRequest) {
     }
   }
   
-  // Fallback: arquivo local
-  const filePath = getDataFilePath("sites.json");
-  const list = await readJsonFile<SiteItem[]>(filePath, []);
-  const next = list.filter((s) => s.slug !== slug);
-  if (next.length === list.length) return NextResponse.json({ ok: false, error: "não encontrado" }, { status: 404 });
-  await writeJsonFile(filePath, next);
-  return NextResponse.json({ ok: true });
+  // Fallback: retornar erro pois não temos acesso a arquivos no Vercel
+  return NextResponse.json({ ok: false, error: "Not available in production" }, { status: 501 });
 }
 
 

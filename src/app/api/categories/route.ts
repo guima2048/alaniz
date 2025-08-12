@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getDataFilePath, readJsonFile, writeJsonFile } from "@/lib/fsData";
 import { getSupabase } from "@/lib/supabase";
 
 type Category = { slug: string; title: string; order?: number };
@@ -8,43 +7,27 @@ export async function GET() {
   const supabase = getSupabase();
   if (supabase) {
     try {
-      // Tentar buscar com order primeiro
       const { data, error } = await supabase
         .from("categories")
         .select("*")
         .order("order", { ascending: true });
-      
-      if (error && error.message.includes("order")) {
-        // Se der erro com order, tentar sem order
-        console.log("⚠️ Coluna order não existe, usando fallback...");
-        const { data: dataWithoutOrder, error: errorWithoutOrder } = await supabase
-          .from("categories")
-          .select("*")
-          .order("title", { ascending: true });
-        
-        if (errorWithoutOrder) throw errorWithoutOrder;
-        return NextResponse.json(dataWithoutOrder || []);
-      }
-      
       if (error) throw error;
       return NextResponse.json(data || []);
     } catch (e) {
       console.error("Supabase error:", e);
-      // Fallback para arquivo local
     }
   }
   
-  // Fallback: arquivo local
-  const filePath = getDataFilePath("categories.json");
-  const data = await readJsonFile<Category[]>(filePath, []);
-  // Ordenar por order se disponível, senão por título
-  const sortedData = data.sort((a, b) => {
-    if (a.order !== undefined && b.order !== undefined) {
-      return a.order - b.order;
-    }
-    return (a.title || "").localeCompare(b.title || "");
-  });
-  return NextResponse.json(sortedData);
+  // Dados estáticos como fallback
+  const staticData: Category[] = [
+    { slug: "todos", title: "Todos", order: 1 },
+    { slug: "famosos", title: "Famosos", order: 2 },
+    { slug: "elite", title: "Elite", order: 3 },
+    { slug: "sugar", title: "Sugar", order: 4 },
+    { slug: "lgbtqiapn", title: "LGBTQIAPN+", order: 5 }
+  ];
+  
+  return NextResponse.json(staticData);
 }
 
 export async function PUT(req: NextRequest) {
@@ -80,33 +63,8 @@ export async function PUT(req: NextRequest) {
     }
   }
   
-  // Fallback: arquivo local
-  const filePath = getDataFilePath("categories.json");
-  const list = await readJsonFile<Category[]>(filePath, []);
-  const idx = list.findIndex((c) => c.slug === body.slug);
-  
-  // Se não tem order definido, usar a próxima ordem disponível
-  let order = body.order;
-  if (order === undefined) {
-    const maxOrder = Math.max(...list.map(c => c.order || 0), 0);
-    order = maxOrder + 1;
-  }
-  
-  if (idx === -1) {
-    list.push({ 
-      slug: String(body.slug), 
-      title: String(body.title),
-      order: order
-    });
-  } else {
-    list[idx] = { 
-      slug: String(body.slug), 
-      title: String(body.title),
-      order: order
-    };
-  }
-  await writeJsonFile(filePath, list);
-  return NextResponse.json({ ok: true });
+  // Fallback: retornar erro pois não temos acesso a arquivos no Vercel
+  return NextResponse.json({ ok: false, error: "Not available in production" }, { status: 501 });
 }
 
 export async function DELETE(req: NextRequest) {
@@ -129,12 +87,8 @@ export async function DELETE(req: NextRequest) {
     }
   }
   
-  // Fallback: arquivo local
-  const filePath = getDataFilePath("categories.json");
-  const list = await readJsonFile<Category[]>(filePath, []);
-  const next = list.filter((c) => c.slug !== slug);
-  await writeJsonFile(filePath, next);
-  return NextResponse.json({ ok: true });
+  // Fallback: retornar erro pois não temos acesso a arquivos no Vercel
+  return NextResponse.json({ ok: false, error: "Not available in production" }, { status: 501 });
 }
 
 export async function PATCH(req: NextRequest) {
@@ -169,20 +123,8 @@ export async function PATCH(req: NextRequest) {
     }
   }
   
-  // Fallback: arquivo local
-  const filePath = getDataFilePath("categories.json");
-  const list = await readJsonFile<Category[]>(filePath, []);
-  
-  // Atualizar a ordem das categorias
-  for (const cat of body.categories) {
-    const idx = list.findIndex((c) => c.slug === cat.slug);
-    if (idx !== -1) {
-      list[idx].order = cat.order;
-    }
-  }
-  
-  await writeJsonFile(filePath, list);
-  return NextResponse.json({ ok: true });
+  // Fallback: retornar erro pois não temos acesso a arquivos no Vercel
+  return NextResponse.json({ ok: false, error: "Not available in production" }, { status: 501 });
 }
 
 
