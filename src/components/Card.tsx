@@ -54,6 +54,13 @@ export function Card({ item }: Props) {
   // Título do site - apenas BeBaby mantém .app
   const siteTitle = item.slug === "bebaby" ? `${item.name}.app` : item.name;
   
+  // Função para abrir o site em nova aba
+  const handleSiteClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    window.open(item.url, '_blank', 'noopener,noreferrer');
+  };
+  
   return (
     <div className="flex flex-col items-center">
       <Link
@@ -137,15 +144,12 @@ export function Card({ item }: Props) {
               >
                 Mais
               </Link>
-              <a
-                href={item.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 bg-purple-600 text-white px-2 py-1.5 rounded text-xs font-medium hover:bg-purple-700 transition-colors text-center"
-                onClick={(e) => e.stopPropagation()}
+              <button
+                onClick={handleSiteClick}
+                className="flex-1 bg-purple-600 text-white px-2 py-1.5 rounded text-xs font-medium hover:bg-purple-700 transition-colors"
               >
                 Site
-              </a>
+              </button>
             </div>
           </div>
         </div>
