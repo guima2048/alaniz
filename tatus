@@ -3,3 +3,13 @@
 [33mc42cebf[m  Fix: Corrigir problema de URL no cliente e simplificar fetch
 [33m9b1012d[m  Fix: Configuração Vercel e Next.js para resolver erro 404
 [33m99a338d[m  Deploy completo: Supabase + Storage + Favicon Alaniz
+[33mfc98180[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m fix: corrigir APIs para buscar dados do Supabase no Vercel
+[33m92e18c0[m fix: corrigir APIs para funcionar no Vercel - usar dados estáticos como fallback
+[33me317c79[m feat: versão super rápida - Bebaby redireciona para site real, outros para /site
+[33m4bcbdfc[m  Otimizações máximas para velocidade da página home
+[33m0d74807[m feat: otimizar CLS e simplificar cards da home - Corrigir CLS (Cumulative Layout Shift) com dimensões reservadas - Remover textos e logos dos cards, mantendo apenas imagens - Adicionar nomes dos sites em negrito e centralizado abaixo dos cards - Implementar CSS crítico inline para prevenir layout shift - Otimizar componentes ConsentBanner, SiteRating e OptimizedImage - Build 100% funcional com performance otimizada
+[33m9b106d3[m fix: corrigir layout CSS e otimizar performance - Restaurar import globals.css para layout correto - Corrigir erros TypeScript e warnings ESLint - Implementar otimizações de CSS não crítico - Adicionar scripts de verificação de otimização - Corrigir tipos e tratamento de erros - Build 100% funcional sem erros
+[33m4c5a6a3[m feat: scripts de configuração e teste GA4
+[33m899e3a4[m feat: usar tag oficial do Google Analytics 4
+[33mfee9177[m fix: corrigir erros TypeScript no GA4Debug
+[33mf3d254a[m feat: forçar deploy com GA4 e GTM configurados
