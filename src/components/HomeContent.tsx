@@ -13,7 +13,7 @@ export function HomeContent({ sites, categories }: { sites: SiteItem[]; categori
   const sortedSites = sites.sort((a, b) => (b.rating_avg || 0) - (a.rating_avg || 0));
 
   return (
-    <>
+    <div className="space-y-8">
       {/* Mostrar "Todos os Sites" primeiro */}
       {(() => {
         const todosCategory = categories.find(c => c.slug === 'todos');
@@ -44,6 +44,6 @@ export function HomeContent({ sites, categories }: { sites: SiteItem[]; categori
             />
           );
         })}
-    </>
+    </div>
   );
 }

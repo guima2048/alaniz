@@ -5,13 +5,13 @@
     "order": 1
   },
   {
-    "slug": "sugar",
-    "title": "Relacionamentos Premium",
+    "slug": "namoro-tradicional",
+    "title": "Namoro Tradicional",
     "order": 2
   },
   {
-    "slug": "estilo-tinder",
-    "title": "Apps de Match (Swipe)",
+    "slug": "lgbtqiapn",
+    "title": "LGBTQIAPN+",
     "order": 3
   },
   {
@@ -23,5 +23,15 @@
     "slug": "nicho",
     "title": "Nichos Especiais",
     "order": 5
+  },
+  {
+    "slug": "famosos",
+    "title": "Sites Famosos",
+    "order": 6
+  },
+  {
+    "slug": "sites-de-elite",
+    "title": "Sites de Elite",
+    "order": 7
   }
 ]
