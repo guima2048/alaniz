@@ -17,8 +17,8 @@ export function GA4Debug() {
 
   useEffect(() => {
     const checkStatus = () => {
-      const gtagExists = typeof window !== "undefined" && !!(window as any).gtag;
-      const dataLayerExists = typeof window !== "undefined" && !!(window as any).dataLayer;
+      const gtagExists = typeof window !== "undefined" && !!(window as unknown as { gtag?: unknown }).gtag;
+      const dataLayerExists = typeof window !== "undefined" && !!(window as unknown as { dataLayer?: unknown }).dataLayer;
       
       setStatus({
         gtag: gtagExists,
