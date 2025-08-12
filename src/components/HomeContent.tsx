@@ -12,11 +12,14 @@ export function HomeContent({ sites, categories }: { sites: SiteItem[]; categori
   // Ordenar sites por rating (sem useMemo para máxima performance)
   const sortedSites = sites.sort((a, b) => (b.rating_avg || 0) - (a.rating_avg || 0));
 
+  // Ordenar categorias pelo campo order (seguindo a ordem definida no admin)
+  const sortedCategories = categories.sort((a, b) => (a.order || 0) - (b.order || 0));
+
   return (
     <div className="space-y-8">
       {/* Mostrar "Todos os Sites" primeiro */}
       {(() => {
-        const todosCategory = categories.find(c => c.slug === 'todos');
+        const todosCategory = sortedCategories.find(c => c.slug === 'todos');
         if (todosCategory) {
           return (
             <Row 
@@ -29,8 +32,8 @@ export function HomeContent({ sites, categories }: { sites: SiteItem[]; categori
         return null;
       })()}
       
-      {/* Mostrar outras categorias */}
-      {categories
+      {/* Mostrar outras categorias na ordem definida */}
+      {sortedCategories
         .filter(c => c.slug !== 'todos')
         .map((c) => {
           const categorySites = sites.filter((s) => (s.categories || []).includes(c.slug));
