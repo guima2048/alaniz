@@ -68,7 +68,7 @@ export function Card({ item }: Props) {
                 fill
                 className="object-cover opacity-30"
                 loading="lazy"
-                sizes="280px"
+                sizes="140px"
               />
             </div>
             
@@ -104,16 +104,16 @@ export function Card({ item }: Props) {
           </div>
           
           {/* Seção inferior branca */}
-          <div className="p-4 bg-white">
-            <div className="flex items-start gap-3">
+          <div className="p-3 bg-white">
+            <div className="flex items-start gap-2">
               {/* Ícone quadrado roxo */}
-              <div className="w-8 h-8 bg-purple-600 rounded flex items-center justify-center flex-shrink-0">
-                <span className="text-white font-bold text-sm">{initials}</span>
+              <div className="w-6 h-6 bg-purple-600 rounded flex items-center justify-center flex-shrink-0">
+                <span className="text-white font-bold text-xs">{initials}</span>
               </div>
               
               {/* Conteúdo */}
               <div className="flex-1 min-w-0">
-                <h4 className="font-bold text-neutral-900 text-sm mb-1">
+                <h4 className="font-bold text-neutral-900 text-xs mb-1">
                   {item.name}.app
                 </h4>
                 <p className="text-neutral-700 text-xs line-clamp-2 leading-relaxed">
@@ -122,11 +122,20 @@ export function Card({ item }: Props) {
               </div>
             </div>
             
-            {/* Botão "Saber mais" */}
-            <div className="mt-3 flex justify-center">
-              <button className="bg-neutral-900 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-neutral-800 transition-colors">
-                Saber mais
+            {/* Botões "Mais" e "Site" */}
+            <div className="mt-2 flex gap-2">
+              <button className="flex-1 bg-neutral-900 text-white px-2 py-1.5 rounded text-xs font-medium hover:bg-neutral-800 transition-colors">
+                Mais
               </button>
+              <a
+                href={item.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 bg-purple-600 text-white px-2 py-1.5 rounded text-xs font-medium hover:bg-purple-700 transition-colors text-center"
+                onClick={(e) => e.stopPropagation()}
+              >
+                Site
+              </a>
             </div>
           </div>
         </div>

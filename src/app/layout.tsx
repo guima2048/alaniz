@@ -28,9 +28,9 @@ export default function RootLayout({
               
               .card-container {
                 height: auto;
-                width: 280px;
-                min-width: 280px;
-                max-width: 280px;
+                width: 140px;
+                min-width: 140px;
+                max-width: 140px;
               }
               
               .card-image-container {
