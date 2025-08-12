@@ -95,6 +95,15 @@ export default function SiteEditorPage() {
   }, [selectedSlug, isAuthorized]);
 
   const updateSelected = (patch: Partial<SiteItem>) => {
+    // Se está mudando o slug, verificar se já existe
+    if (typeof patch.slug === "string" && patch.slug !== selectedSlug) {
+      const existingSlugs = new Set(sites.map(s => s.slug));
+      if (existingSlugs.has(patch.slug)) {
+        alert(`O slug "${patch.slug}" já existe. Escolha outro nome.`);
+        return;
+      }
+    }
+    
     setSites((prev) => prev.map((it) => (it.slug === selectedSlug ? { ...it, ...patch } : it)));
     if (typeof patch.slug === "string") setSelectedSlug(patch.slug);
   };
@@ -210,7 +219,18 @@ export default function SiteEditorPage() {
               <div>
                 <label className="block text-sm mb-1">Slug</label>
                 <input className="w-full border rounded px-3 py-2" value={selected.slug}
-                  onChange={(e) => updateSelected({ slug: e.target.value.trim() })} />
+                  onChange={(e) => {
+                    const newSlug = e.target.value
+                      .toLowerCase()
+                      .trim()
+                      .replace(/[^a-z0-9-]/g, '-')
+                      .replace(/-+/g, '-')
+                      .replace(/^-|-$/g, '');
+                    updateSelected({ slug: newSlug });
+                  }} />
+                <div className="text-xs text-gray-500 mt-1">
+                  Apenas letras, números e hífens. Será convertido automaticamente.
+                </div>
               </div>
               <div className="md:col-span-2">
                 <label className="block text-sm mb-1">URL</label>
