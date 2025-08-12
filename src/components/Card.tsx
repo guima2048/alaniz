@@ -36,6 +36,9 @@ export function Card({ item }: Props) {
   // Se for Bebaby, vai para o site real
   const href = item.slug === "bebaby" ? "https://www.bebaby.app" : "/site";
   
+  // URL para o botão "Mais" - BeBaby vai para /bebaby, outros para /site
+  const maisHref = item.slug === "bebaby" ? "/bebaby" : "/site";
+  
   // Gerar as iniciais do site para o padrão de fundo
   const initials = item.name
     .split(' ')
@@ -124,9 +127,13 @@ export function Card({ item }: Props) {
             
             {/* Botões "Mais" e "Site" */}
             <div className="mt-2 flex gap-2">
-              <button className="flex-1 bg-neutral-900 text-white px-2 py-1.5 rounded text-xs font-medium hover:bg-neutral-800 transition-colors">
+              <Link
+                href={maisHref}
+                className="flex-1 bg-neutral-900 text-white px-2 py-1.5 rounded text-xs font-medium hover:bg-neutral-800 transition-colors text-center"
+                onClick={(e) => e.stopPropagation()}
+              >
                 Mais
-              </button>
+              </Link>
               <a
                 href={item.url}
                 target="_blank"
