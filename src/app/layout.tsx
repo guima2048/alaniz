@@ -14,13 +14,9 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <head>
-        {/* Preload de recursos críticos */}
-        <link rel="preload" href="/favicon.ico" as="image" type="image/x-icon" />
-        <link rel="preload" href="/favicon.svg" as="image" type="image/svg+xml" />
-        
         {/* Favicons otimizados */}
-        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
         <link rel="shortcut icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/favicon.ico" />
         
