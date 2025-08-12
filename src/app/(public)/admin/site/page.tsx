@@ -253,6 +253,7 @@ export default function SiteEditorPage() {
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   {selected.logo ? <img src={selected.logo} alt="logo" className="h-10" /> : null}
                   <form
+                    onSubmit={(e) => e.preventDefault()}
                     onChange={async (e) => {
                       const input = e.currentTarget.elements.namedItem("file") as HTMLInputElement | null;
                       if (!input || !input.files || !input.files[0]) return;
@@ -274,6 +275,7 @@ export default function SiteEditorPage() {
                   </form>
                   {selected.logo ? (
                     <button
+                      type="button"
                       className="px-2 py-1 text-xs rounded bg-red-600 text-white"
                       onClick={async () => {
                         if (!confirm("Excluir este logo?")) return;
@@ -304,6 +306,7 @@ export default function SiteEditorPage() {
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   {selected.cover ? <img src={selected.cover} alt="capa" className="h-20 object-contain" /> : null}
                   <form
+                    onSubmit={(e) => e.preventDefault()}
                     onChange={async (e) => {
                       const input = e.currentTarget.elements.namedItem("file") as HTMLInputElement | null;
                       if (!input || !input.files || !input.files[0]) return;
@@ -324,6 +327,7 @@ export default function SiteEditorPage() {
                   </form>
                   {selected.cover ? (
                     <button
+                      type="button"
                       className="px-2 py-1 text-xs rounded bg-red-600 text-white"
                       onClick={async () => {
                         if (!confirm("Excluir esta capa?")) return;
@@ -354,6 +358,7 @@ export default function SiteEditorPage() {
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   {selected.hero ? <img src={selected.hero} alt="hero" className="h-28 object-cover" /> : null}
                   <form
+                    onSubmit={(e) => e.preventDefault()}
                     onChange={async (e) => {
                       const input = e.currentTarget.elements.namedItem("file") as HTMLInputElement | null;
                       if (!input || !input.files || !input.files[0]) return;
@@ -374,6 +379,7 @@ export default function SiteEditorPage() {
                   </form>
                   {selected.hero ? (
                     <button
+                      type="button"
                       className="px-2 py-1 text-xs rounded bg-red-600 text-white"
                       onClick={async () => {
                         if (!confirm("Excluir este HERO?")) return;
